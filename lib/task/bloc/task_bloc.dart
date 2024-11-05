@@ -1,0 +1,225 @@
+import 'dart:convert';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:testing/menu/repo/menu_repository.dart';
+import 'package:testing/task/models.dart';
+
+import '../../login/repository/repository.dart';
+
+import '../repository/task_repository.dart';
+
+import 'task_event.dart';
+import 'task_state.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:logger/logger.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
+
+class TaskBloc extends Bloc<TaskEvent, TaskState> {
+  String channelId = 'task_reminders';
+  String channelName = 'Task Reminders';
+  String channelDescription = 'Notifications for upcoming tasks and reminders.';
+  final GetStorage box = GetStorage();
+  List<Tasks> allTasks = []; // Store all fetched tasks
+  final TaskRepository taskRepository;
+  final FlutterLocalNotificationsPlugin localNotificationsPlugin;
+  final Logger logger = Logger();
+  final UserRepository userRepository;
+  final MenuRepository menuRepository; // Add UserRepository here
+  List<Tasks> finishedTasks = []; // Declare finishedTasks here
+
+  TaskBloc({
+    required this.taskRepository,
+    required this.localNotificationsPlugin,
+    required this.userRepository,
+    required this.menuRepository,
+  }) : super(TaskInitial()) {
+    on<TaskSubmitted>(_ontaskSubmitted);
+    on<FetchTaskEvent>(_onFetchTask);
+    on<DeleteTaskEvent>(_onDeleteTask);
+    on<UpdateTaskEvent>(_onTaskUpdated);
+    on<FilterTasksByMenuIdEvent>(_onFilterTasksByMenuId);
+    on<UpdateTaskStatusEvent>(_onMarkTaskAsCompleted); // Handle completion event
+  }
+  Future<void> _ontaskSubmitted(
+      TaskSubmitted event, Emitter<TaskState> emit) async {
+    emit(TaskLoading());
+
+    try {
+      final createdTask =
+          await taskRepository.createTask(event.task, event.date, event.time);
+      await _scheduleNotification(
+        localNotificationsPlugin,
+        createdTask.task,
+        event.date,
+        event.time,
+      );
+      emit(TaskCreated(task: createdTask));
+      logger.i('Task created successfully and notification scheduled');
+      final userId = box.read('userId');
+      final date = box.read('date');
+
+      if (userId == null || date == null) {
+        emit(TaskFailure(message: 'User ID or date is missing'));
+        return;
+      }
+      add(FetchTaskEvent(userId: userId, date: date));
+    } catch (error) {
+      logger.e('Error creating task: $error');
+      emit(TaskFailure(message: error.toString()));
+    }
+  }
+
+  Future<void> _onFetchTask(
+      FetchTaskEvent event, Emitter<TaskState> emit) async {
+    emit(TaskLoading()); // Emit loading state
+
+    try {
+      final List<Tasks> tasks = await taskRepository.fetchTasks(
+          userId: event.userId, date: event.date);
+      allTasks = tasks; // Store fetched tasks in allTasks
+      emit(TaskSuccess(
+          taskList: tasks, menuMap: {})); // Emit loaded state with menu list
+    } catch (e) {
+      logger.e("Error fetching tasks: $e");
+      emit(TaskFailure(message: 'Failed to fetch tasks.'));
+    }
+  }
+
+  void _onFilterTasksByMenuId(
+      FilterTasksByMenuIdEvent event, Emitter<TaskState> emit) {
+    // Filter tasks by selected menuId from allTasks
+    final filteredTasks =
+        allTasks.where((task) => task.menuId == event.menuId).toList();
+    emit(TaskLoaded(filteredTasks)); // Emit filtered tasks
+  }
+
+  Future<void> requestExactAlarmPermission() async {
+    if (await Permission.scheduleExactAlarm.isDenied) {
+      await Permission.scheduleExactAlarm.request();
+    }
+  }
+
+  Future<void> _scheduleNotification(
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
+    String taskName,
+    String date,
+    String time,
+  ) async {
+    try {
+      // Correct the format to 'dd-MM-yyyy hh:mm a' for your date and time
+      final DateTime scheduledDateTime =
+          DateFormat('dd-MM-yyyy hh:mm a').parse('$date $time');
+      final tz.TZDateTime scheduledTZDateTime =
+          tz.TZDateTime.from(scheduledDateTime, tz.local);
+      if (scheduledDateTime.isBefore(DateTime.now())) {
+        logger.e('Cannot schedule notification in the past.');
+        return; // Early return if the scheduled time is in the past
+      }
+
+      logger.i('Scheduled date: ${scheduledDateTime.toIso8601String()}');
+
+      // Configure the notification details
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'task_reminders',
+        'Task Reminders',
+        channelDescription: 'Notifications for upcoming tasks and reminders.',
+        importance: Importance.max,
+        priority: Priority.high,
+        actions: [
+          AndroidNotificationAction(
+            'edit_action',
+            'Edit',
+          ),
+          AndroidNotificationAction(
+            'finish_action',
+            'Finish',
+          ),
+        ],
+      );
+
+      const NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        ' $taskName',
+        ' $time',
+        scheduledTZDateTime,
+        platformChannelSpecifics,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+
+      logger.i(
+          'Notification scheduled for task: $taskName at $scheduledDateTime');
+    } catch (error) {
+      logger.e('Error scheduling notification: $error');
+    }
+  }
+
+  Future<void> _onDeleteTask(
+      DeleteTaskEvent event, Emitter<TaskState> emit) async {
+    try {
+      await taskRepository.deleteTask(event.taskId);
+      emit(TaskDeleteSuccess());
+      add(FetchTaskEvent(
+        userId: taskRepository.userRepository.getUserId()!,
+        date: taskRepository.date(),
+      )); // Refresh task list
+    } catch (e) {
+      emit(TaskDeleteFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onTaskUpdated(
+      UpdateTaskEvent event, Emitter<TaskState> emit) async {
+    emit(TaskEditLoading());
+    try {
+      // Await the updateTask call to get the success status
+      final isUpdated = await taskRepository.updateTask(
+        taskId: event.taskId,
+        task: event.task,
+        date: event.date,
+        time: event.time,
+        menuId: event.menuId,
+      );
+
+      if (isUpdated) {
+        // Fetch updated tasks list if update was successful
+        final updatedTasks = await taskRepository.fetchTasks(
+          userId: userRepository.getUserId()!,
+          date: box.read('date') ?? '',
+        );
+
+        emit(TaskUpdatedSuccess(sucess: updatedTasks));
+      } else {
+        // Emit a failure state if the update was not successful
+        emit(TaskFailure(message: 'Failed to update the task'));
+      }
+    } catch (e) {
+      emit(TaskFailure(message: e.toString()));
+    }
+  }
+   void _onMarkTaskAsCompleted(UpdateTaskStatusEvent event, Emitter<TaskState> emit) {
+    // Mark task as completed and update finishedTasks
+    final updatedTasks = allTasks.map((task) {
+      if (task.id == event.taskId) {
+        return task.copyWith(finished: event.finished);
+      }
+      return task;
+    }).toList();
+
+    // Update both lists
+    allTasks = updatedTasks;
+    finishedTasks = updatedTasks.where((task) => task.finished).toList();
+
+     emit(TaskSuccess(taskList: updatedTasks, menuMap: {})); // Emit the updated task list
+    emit(FinishedTasksLoaded(finishedTasks));
+  }
+}
