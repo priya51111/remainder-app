@@ -25,7 +25,7 @@ class Loginpage extends StatelessWidget {
               SnackBar(content: Text(state.message)),
             );
           } else if (state is UserAlreadyExists) {
-              ScaffoldMessenger.of(context).showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
           } else if (state is UserCreated) {
@@ -136,9 +136,9 @@ class Loginpage extends StatelessWidget {
                   ),
                   Center(
                       child: Padding(
-                    padding: const EdgeInsets.only(top: 50),
+                    padding: const EdgeInsets.only(top: 30),
                     child: SizedBox(
-                        height: 50,
+                        height: 40,
                         width: 110,
                         child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -159,16 +159,32 @@ class Loginpage extends StatelessWidget {
                               style: TextStyle(color: Color(0xFFFFF8F8)),
                             ))),
                   )),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  Signpage()), // Navigate to NewPage
-                        );
-                      },
-                      child: Text('sigin'))
+                  Center(
+                      child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: SizedBox(
+                        height: 40,
+                        width: 110,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(135, 33, 149, 243),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                )),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Signpage()), // Navigate to NewPage
+                              );
+                            },
+                            child: const Text(
+                              'Signin',
+                              style: TextStyle(color: Color(0xFFFFF8F8)),
+                            ))),
+                  )),
                 ],
               ),
             ),

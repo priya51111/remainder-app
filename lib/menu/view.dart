@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:testing/logout/LogoutPage.dart';
 import 'package:testing/task/bloc/task_event.dart';
 import 'package:testing/task/models.dart';
 import 'package:testing/task/repository/task_repository.dart';
@@ -22,7 +23,8 @@ enum Menu {
   SendFeedback,
   FollowUs,
   Invite,
-  Settings
+  Settings,
+  Logout
 }
 
 class SimplePage extends StatefulWidget {
@@ -32,7 +34,7 @@ class SimplePage extends StatefulWidget {
 
 class _SimplePageState extends State<SimplePage> {
   String? dropdownValue;
-  List<String> dropdownItems = ['New List','Finished '];
+  List<String> dropdownItems = ['New List', 'Finished '];
   late UserRepository userRepository;
   late MenuRepository menuRepository;
   late TaskRepository taskRepository;
@@ -84,22 +86,24 @@ class _SimplePageState extends State<SimplePage> {
       );
     }
   }
-List<Tasks> _getFilteredTasks(TaskState state) {
-  if (state is TaskSuccess) {
-    print('Dropdown Value: $dropdownValue'); // Debugging line
-    print('Total Tasks: ${state.taskList.length}'); // Debugging line
-    
-    if (dropdownValue == 'Finished') {
-      final finishedTasks = state.taskList.where((task) => task.finished).toList();
-      print('Finished Tasks Count: ${finishedTasks.length}'); // Debugging line
-      return finishedTasks;
-    } else {
-      return state.taskList; 
-    }
-  }
-  return []; 
-}
 
+  List<Tasks> _getFilteredTasks(TaskState state) {
+    if (state is TaskSuccess) {
+      print('Dropdown Value: $dropdownValue'); // Debugging line
+      print('Total Tasks: ${state.taskList.length}'); // Debugging line
+
+      if (dropdownValue == 'Finished') {
+        final finishedTasks =
+            state.taskList.where((task) => task.finished).toList();
+        print(
+            'Finished Tasks Count: ${finishedTasks.length}'); // Debugging line
+        return finishedTasks;
+      } else {
+        return state.taskList;
+      }
+    }
+    return [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,12 +127,9 @@ List<Tasks> _getFilteredTasks(TaskState state) {
                 if (value == 'New List') {
                   _showNewMenuDialog();
                 } else {
-                 setState(() {
-  dropdownValue = value;
- 
-});
-
-
+                  setState(() {
+                    dropdownValue = value;
+                  });
                 }
               },
             ),
@@ -160,7 +161,8 @@ List<Tasks> _getFilteredTasks(TaskState state) {
                   setState(() {
                     dropdownItems = [
                       'New List',
-                      ...state.menuList.map((menu) => menu.menuname).toList(),'Finished'
+                      ...state.menuList.map((menu) => menu.menuname).toList(),
+                      'Finished'
                     ];
                     dropdownValue = dropdownItems.first;
                   });
@@ -177,7 +179,7 @@ List<Tasks> _getFilteredTasks(TaskState state) {
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
-          if (state is TaskLoading|| state is TaskEditLoading) {
+          if (state is TaskLoading || state is TaskEditLoading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is TaskSuccess) {
             final filteredTasks = _getFilteredTasks(state);
@@ -212,18 +214,19 @@ List<Tasks> _getFilteredTasks(TaskState state) {
                         children: [
                           Column(
                             children: [
-                                Checkbox(
-              value: task.finished, // Assuming `isFinished` is a boolean property in the task model
-              onChanged: (value) {
-                // Update task to finished
-                context.read<TaskBloc>().add(
-                  UpdateTaskStatusEvent(
-                    taskId: task.id,
-                    finished: value!,
-                  ),
-                );
-              },
-            ),
+                              Checkbox(
+                                value: task
+                                    .finished, // Assuming `isFinished` is a boolean property in the task model
+                                onChanged: (value) {
+                                  // Update task to finished
+                                  context.read<TaskBloc>().add(
+                                        UpdateTaskStatusEvent(
+                                          taskId: task.id,
+                                          finished: value!,
+                                        ),
+                                      );
+                                },
+                              ),
                             ],
                           ),
                           Column(
@@ -256,7 +259,10 @@ List<Tasks> _getFilteredTasks(TaskState state) {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const CreateTaskPage(isEditMode: false,)),
+            MaterialPageRoute(
+                builder: (context) => const CreateTaskPage(
+                      isEditMode: false,
+                    )),
           );
         },
         child: const Icon(Icons.add),
@@ -286,15 +292,14 @@ List<Tasks> _getFilteredTasks(TaskState state) {
           case Menu.RemoveAds:
             break;
           case Menu.MoreApps:
-          // TODO: Handle this case.
           case Menu.SendFeedback:
-          // TODO: Handle this case.
           case Menu.FollowUs:
-          // TODO: Handle this case.
           case Menu.Invite:
-          // TODO: Handle this case.
           case Menu.Settings:
-          // TODO: Handle this case.
+            
+          case Menu.Logout:
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => LogoutPage()));
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
@@ -331,6 +336,11 @@ List<Tasks> _getFilteredTasks(TaskState state) {
         const PopupMenuItem<Menu>(
           value: Menu.Settings,
           child: Text('Settings',
+              style: TextStyle(color: Colors.white, fontSize: 17)),
+        ),
+        const PopupMenuItem<Menu>(
+          value: Menu.Settings,
+          child: Text('Logout',
               style: TextStyle(color: Colors.white, fontSize: 17)),
         ),
       ],
