@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:testing/addBatchMode.dart';
+import 'package:testing/settings.dart';
 import 'package:testing/task/bloc/task_event.dart';
 import 'package:testing/task/models.dart';
 import 'package:testing/task/repository/task_repository.dart';
@@ -32,7 +34,7 @@ class SimplePage extends StatefulWidget {
 
 class _SimplePageState extends State<SimplePage> {
   String? dropdownValue;
-  List<String> dropdownItems = ['New List','Finished '];
+  List<String> dropdownItems = ['New List', 'Finished '];
   late UserRepository userRepository;
   late MenuRepository menuRepository;
   late TaskRepository taskRepository;
@@ -40,17 +42,14 @@ class _SimplePageState extends State<SimplePage> {
   @override
   void initState() {
     super.initState();
-    userRepository = UserRepository(); // Initialize the user repository
-    menuRepository = MenuRepository(
-        userRepository:
-            userRepository); // Pass user repository to menu repository
+    userRepository = UserRepository();
+    menuRepository = MenuRepository(userRepository: userRepository);
     taskRepository = TaskRepository(
       userRepository: userRepository,
       menuRepository: menuRepository,
-    ); // Pass both repositories to task repositoryn
-
+    );
     _fetchMenus();
-    _fetchTasks();
+    _fetchTasks(true);
   }
 
   void _fetchMenus() {
@@ -68,14 +67,13 @@ class _SimplePageState extends State<SimplePage> {
     }
   }
 
-  void _fetchTasks() {
+  void _fetchTasks(bool? finished) {
     final userIds = userRepository.getUserId();
     final dates = taskRepository.date();
 
     if (userIds != null) {
-      context
-          .read<TaskBloc>()
-          .add(FetchTaskEvent(userId: userIds, date: dates));
+      context.read<TaskBloc>().add(
+          FetchTaskEvent(userId: userIds, date: dates, finished: finished));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -84,22 +82,20 @@ class _SimplePageState extends State<SimplePage> {
       );
     }
   }
-List<Tasks> _getFilteredTasks(TaskState state) {
-  if (state is TaskSuccess) {
-    print('Dropdown Value: $dropdownValue'); // Debugging line
-    print('Total Tasks: ${state.taskList.length}'); // Debugging line
-    
-    if (dropdownValue == 'Finished') {
-      final finishedTasks = state.taskList.where((task) => task.finished).toList();
-      print('Finished Tasks Count: ${finishedTasks.length}'); // Debugging line
-      return finishedTasks;
-    } else {
-      return state.taskList; 
-    }
-  }
-  return []; 
-}
 
+  List<Tasks> _getFilteredTasks(TaskState state) {
+    if (state is TaskSuccess) {
+      print('Dropdown Value: $dropdownValue');
+      print('Total Tasks: ${state.taskList.length}');
+
+      if (dropdownValue == 'Finished') {
+        return state.taskList.where((task) => task.isFinished).toList();
+      } else {
+        return state.taskList.where((task) => !task.isFinished).toList();
+      }
+    }
+    return [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,38 +105,58 @@ List<Tasks> _getFilteredTasks(TaskState state) {
         backgroundColor: Color.fromARGB(135, 33, 149, 243),
         title: Row(
           children: [
-            Icon(Icons.check_circle, size: 30),
-            DropdownButton<String>(
-              value: dropdownValue,
-              hint: Text('Select'),
-              items: dropdownItems.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                if (value == 'New List') {
-                  _showNewMenuDialog();
-                } else {
-                 setState(() {
-  dropdownValue = value;
- 
-});
+            Icon(
+              Icons.check_circle,
+              size: 30,
+              color: Colors.white,
+            ),
+            SizedBox(width: 8),
+            Padding(
+              padding: EdgeInsets.only(top: 15),
+              child: Container(
+                width: 160.0,
+                height: 60.0,
+                child: DropdownButton<String>(
+                  value: dropdownValue,
+                  hint: Text('Select'),
+                  items: dropdownItems.map((String item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      dropdownValue = value;
+                    });
+                    if (value == 'New List') {
+                      _showNewMenuDialog();
+                    } else if (value == 'Finished') {
+                      _fetchTasks(true);
+                    } else {
+                      _fetchTasks(false);
+                    }
+                  },
+                  dropdownColor: Color.fromARGB(135, 33, 149, 243),
+                  iconEnabledColor: Colors.white, // Change icon color to white
 
-
-                }
-              },
+                  isExpanded:
+                      true, // Makes the dropdown take up the full width available
+                  underline: SizedBox(), // Removes the underline
+                ),
+              ),
             ),
             BlocListener<MenuBloc, MenuState>(
               listener: (context, state) {
                 if (state is MenuCreated) {
                   setState(() {
                     if (!dropdownItems.contains(state.menuname)) {
-                      dropdownItems
-                          .add(state.menuname); // Add the newly created menu
+                      dropdownItems.add(state.menuname);
                     }
-                    dropdownValue = state.menuname; // Set as selected
+                    dropdownValue = state.menuname;
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -160,7 +176,8 @@ List<Tasks> _getFilteredTasks(TaskState state) {
                   setState(() {
                     dropdownItems = [
                       'New List',
-                      ...state.menuList.map((menu) => menu.menuname).toList(),'Finished'
+                      ...state.menuList.map((menu) => menu.menuname).toList(),
+                      'Finished'
                     ];
                     dropdownValue = dropdownItems.first;
                   });
@@ -175,88 +192,143 @@ List<Tasks> _getFilteredTasks(TaskState state) {
           _buildPopupMenu()
         ],
       ),
-      body: BlocBuilder<TaskBloc, TaskState>(
-        builder: (context, state) {
-          if (state is TaskLoading|| state is TaskEditLoading) {
-            return Center(child: CircularProgressIndicator());
+      body: BlocListener<TaskBloc, TaskState>(
+        listener: (context, state) {
+          if (state is TaskMarkedAsCompleted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                duration: Duration(seconds: 3),
+              ),
+            );
+
+            _fetchTasks(true);
+            _fetchTasks(false);
           } else if (state is TaskSuccess) {
-            final filteredTasks = _getFilteredTasks(state);
-            return ListView.builder(
-              itemCount: filteredTasks.length,
-              itemBuilder: (context, index) {
-                final task = filteredTasks[index];
-                final menuname = state.menuMap[task.menuId] ??
-                    'Unknown menu'; // Fetch the menu name
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CreateTaskPage(
-                          task: task, // Pass the task details here
-                          isEditMode: true, // Indicate this is edit mode
-                        ),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(9),
-                    child: Container(
-                      height: 70,
-                      width: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Color.fromARGB(135, 33, 149, 243),
-                      ),
-                      child: Row(
-                        children: [
-                          Column(
-                            children: [
-                                Checkbox(
-              value: task.finished, // Assuming `isFinished` is a boolean property in the task model
-              onChanged: (value) {
-                // Update task to finished
-                context.read<TaskBloc>().add(
-                  UpdateTaskStatusEvent(
-                    taskId: task.id,
-                    finished: value!,
-                  ),
-                );
-              },
-            ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(task.task), // Display task name
-                              SizedBox(width: 10),
-                              Text(
-                                  '${task.date} ${task.time}'), // Display date and time
-                              SizedBox(width: 10),
-                              // Handle the list of menuIds
-                              SizedBox(width: 10),
-                              Text(menuname), // Di
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Tasks fetched successfully'),
+                duration: Duration(seconds: 2),
+              ),
             );
           } else if (state is TaskFailure) {
-            return Center(child: Text('Error: ${state.message}'));
-          } else {
-            return Center(child: Text('No tasks available'));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error: ${state.message}'),
+                duration: Duration(seconds: 3),
+              ),
+            );
+          } else if (state is TaskUpdatedSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Task updated successfully'),
+                duration: Duration(seconds: 2),
+              ),
+            );
           }
         },
+        child: BlocBuilder<TaskBloc, TaskState>(
+          builder: (context, state) {
+            if (state is TaskLoading || state is TaskEditLoading) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is TaskSuccess) {
+              final filteredTasks = _getFilteredTasks(state);
+              return ListView.builder(
+                itemCount: filteredTasks.length,
+                itemBuilder: (context, index) {
+                  final task = filteredTasks[index];
+                  final menuname = state.menuMap[task.menuId] ?? 'Unknown menu';
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CreateTaskPage(
+                            task: task,
+                            isEditMode: true,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(9),
+                      child: Container(
+                        height: 70,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: Color.fromARGB(135, 33, 149, 243),
+                        ),
+                        child: Row(
+                          children: [
+                            Column(
+                              children: [
+                                Checkbox(
+                                  value: task.isFinished,
+                                  onChanged: (bool? value) {
+                                    if (value != null && !task.isFinished) {
+                                      context.read<TaskBloc>().add(
+                                            MarkTaskAsCompleted(
+                                              taskId: task.id,
+                                            ),
+                                          );
+                                    }
+                                  },
+                                  side: BorderSide(color: Colors.white),
+                                  activeColor: Colors.blue.shade900,
+                                  checkColor: Colors.white,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 100),
+                                  child: Text(
+                                    task.task,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  '${task.date} ${task.time}',
+                                  style: TextStyle(
+                                    color: Color.fromARGB(135, 33, 149, 243),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 30),
+                                  child: Text(
+                                    menuname,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else if (state is TaskFailure) {
+              return Center(child: Text('Error: ${state.message}'));
+            } else {
+              return Center(child: Text('No tasks available'));
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const CreateTaskPage(isEditMode: false,)),
+            MaterialPageRoute(
+                builder: (context) => const CreateTaskPage(
+                      isEditMode: false,
+                    )),
           );
         },
         child: const Icon(Icons.add),
@@ -268,7 +340,7 @@ List<Tasks> _getFilteredTasks(TaskState state) {
     return PopupMenuButton<Menu>(
       elevation: 0,
       color: Color.fromARGB(135, 33, 149, 243),
-      constraints: BoxConstraints.tightFor(height: 410, width: 200),
+      constraints: BoxConstraints.tightFor(height: 340, width: 200),
       icon: const Icon(
         Icons.more_vert,
         color: Colors.white,
@@ -282,6 +354,12 @@ List<Tasks> _getFilteredTasks(TaskState state) {
             );
             break;
           case Menu.AddInBatchMode:
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Addbatchmode(
+                          isEditMode: false,
+                        )));
             break;
           case Menu.RemoveAds:
             break;
@@ -294,6 +372,9 @@ List<Tasks> _getFilteredTasks(TaskState state) {
           case Menu.Invite:
           // TODO: Handle this case.
           case Menu.Settings:
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => settings()));
+                
           // TODO: Handle this case.
         }
       },
@@ -346,7 +427,13 @@ List<Tasks> _getFilteredTasks(TaskState state) {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Create New Menu'),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+          title: Text(
+            'Create New Menu',
+            style: TextStyle(
+              color: Color.fromARGB(201, 4, 83, 147),
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -392,7 +479,12 @@ List<Tasks> _getFilteredTasks(TaskState state) {
                   );
                 }
               },
-              child: Text('Submit'),
+              child: Text(
+                'Submit',
+                style: TextStyle(
+                  color: Color.fromARGB(201, 4, 83, 147),
+                ),
+              ),
             ),
           ],
         );

@@ -58,101 +58,126 @@ class _TasklistpageState extends State<Tasklistpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:MultiBlocListener(listeners:   [
-        BlocListener<TaskBloc, TaskState>(
-          listener: (context, state) {
-            if (state is TaskDeleteSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Task deleted successfully")),
-              );
-            } else if (state is TaskDeleteFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Failed to delete task')),
-              );
-            }
-          },
+        backgroundColor: Color.fromARGB(134, 4, 83, 147),
+        appBar: AppBar(
+          title: Text(
+            'Task Page',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Color.fromARGB(135, 33, 149, 243),
         ),
-      ], child:        BlocBuilder<TaskBloc, TaskState>(
-        builder: (context, state) {
-          if (state is TaskLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is TaskDeleteSuccess) {
-           SchedulerBinding.instance.addPostFrameCallback((_) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text("Task deleted successfully")),
-  );
-});
-
-            return SizedBox.shrink(); // To prevent multiple SnackBars
-          } else if (state is TaskDeleteFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to delete task')),
-            );
-            return SizedBox.shrink();
-          } else if (state is TaskSuccess) {
-            return ListView.builder(
-              itemCount: state.taskList.length,
-              itemBuilder: (context, index) {
-                final task = state.taskList[index];
-                final menuname = state.menuMap[task.menuId] ??
-                    'Unknown menu'; // Fetch the menu name
-                return Padding(
-                  padding: const EdgeInsets.all(9),
-                  child: Container(
-                    height: 70,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: Color.fromARGB(135, 33, 149, 243),
-                    ),
-                    child: Row(
-                      children: [
-                        Column(
-                          children: [
-                            Text(task.task), // Display task name
-                            SizedBox(width: 10),
-                            Text(
-                                '${task.date} ${task.time}'), // Display date and time
-                            SizedBox(width: 10),
-                            // Handle the list of menuIds
-                            SizedBox(width: 10),
-                            Text(menuname), // Di
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            IconButton(
-                               onPressed: (){},
-                                icon: Icon(Icons.edit))
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                 
-                                  context
-                                      .read<TaskBloc>()
-                                      .add(DeleteTaskEvent(taskId: task.id));
-                                }, icon: Icon(Icons.delete))
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                );
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<TaskBloc, TaskState>(
+              listener: (context, state) {
+                if (state is TaskDeleteSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Task deleted successfully")),
+                  );
+                } else if (state is TaskDeleteFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to delete task')),
+                  );
+                }
               },
-            ); 
-          } else if (state is TaskFailure) {
-            return Center(child: Text('Error: ${state.message}'));
-          } else {
-            return Center(child: Text('No tasks available'));
-          }
-        },
-      ),)
-      
-      
+            ),
+          ],
+          child: BlocBuilder<TaskBloc, TaskState>(
+            builder: (context, state) {
+              if (state is TaskLoading) {
+                return Center(child: CircularProgressIndicator());
+              } else if (state is TaskDeleteSuccess) {
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Task deleted successfully")),
+                  );
+                });
 
-    );
+                return SizedBox.shrink(); // To prevent multiple SnackBars
+              } else if (state is TaskDeleteFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to delete task')),
+                );
+                return SizedBox.shrink();
+              } else if (state is TaskSuccess) {
+                return ListView.builder(
+                  itemCount: state.taskList.length,
+                  itemBuilder: (context, index) {
+                    final task = state.taskList[index];
+                    final menuname = state.menuMap[task.menuId] ??
+                        'Unknown menu'; // Fetch the menu name
+                    return Padding(
+                      padding: const EdgeInsets.all(9),
+                      child: Container(
+                        height: 70,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromARGB(135, 33, 149, 243),
+                        ),
+                        child: Row(
+                          children: [
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 100),
+                                  child: Text(
+                                    task.task,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ), // Display task name
+                                SizedBox(width: 10),
+                                Text(
+                                  '${task.date} ${task.time}',
+                                  style: TextStyle(color:Color.fromARGB(135, 33, 149, 243), ),
+                                ), // Display date and time
+                                
+                                SizedBox(width: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 30),
+                                  child: Text(
+                                    menuname,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ), // Di
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                    ))
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      context.read<TaskBloc>().add(
+                                          DeleteTaskEvent(taskId: task.id));
+                                    },
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                    ))
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              } else if (state is TaskFailure) {
+                return Center(child: Text('Error: ${state.message}'));
+              } else {
+                return Center(child: Text('No tasks available'));
+              }
+            },
+          ),
+        ));
   }
 }

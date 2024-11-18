@@ -180,6 +180,7 @@ class TaskRepository {
     required String date,
     required String time,
     required String menuId,
+    required bool isFinished,
   }) async {
     final token = await userRepository.getToken();
 
@@ -202,6 +203,7 @@ class TaskRepository {
           'date': date,
           'time': time,
           'menuId': menuId,
+          'finished':isFinished,
         }),
       );
       // Log the API response status and body
@@ -211,6 +213,31 @@ class TaskRepository {
     } catch (e) {
       print('Error updating task: $e');
       return false;
+    }
+  }
+  Future<void> completedTask(String taskId)async{
+    try{
+    final token = await userRepository.getToken();
+
+    final taskId = box.read('taskId');
+    logger.i('token:$token,taskId:$taskId');
+    logger.i(
+        'Attempting to updating  with ID: $taskId'); // Assume token is stored here for authorization
+         final urls = Uri.parse(
+        'https://app-project-9.onrender.com/api/task/completeTask/$taskId');
+         final response = await http.patch(
+        urls,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+       
+      ); logger.i('API Response Status Code: ${response.statusCode}');
+      logger.i('API Response Body: ${response.body}');
+      
+    }catch  (e) {
+      print('Error updating task: $e');
+      
     }
   }
 }
