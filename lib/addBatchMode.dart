@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:testing/task/bloc/task_bloc.dart';
+import 'package:testing/task/bloc/task_event.dart';
+import 'package:testing/task/bloc/task_state.dart';
 import 'package:testing/task/models.dart';
 
 import '../../login/repository/repository.dart';
@@ -10,22 +13,20 @@ import '../../menu/bloc/menu_event.dart';
 import '../../menu/bloc/menu_state.dart';
 import '../../menu/model.dart';
 import '../../menu/repo/menu_repository.dart';
-import '../bloc/task_bloc.dart';
-import '../bloc/task_event.dart';
-import '../bloc/task_state.dart';
 
-class CreateTaskPage extends StatefulWidget {
+
+class Addbatchmode extends StatefulWidget {
   final Tasks? task; // Optional task parameter for editing
   final bool isEditMode;
 
-  const CreateTaskPage({Key? key, this.task, required this.isEditMode})
+  const Addbatchmode({Key? key, this.task, required this.isEditMode})
       : super(key: key);
 
   @override
-  State<CreateTaskPage> createState() => _CreateTaskPageState();
+  State<Addbatchmode> createState() => _CreateTaskPageState();
 }
 
-class _CreateTaskPageState extends State<CreateTaskPage> {
+class _CreateTaskPageState extends State<Addbatchmode> {
   final TextEditingController _taskController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();

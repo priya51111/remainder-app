@@ -40,8 +40,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<FetchTaskEvent>(_onFetchTask);
     on<DeleteTaskEvent>(_onDeleteTask);
     on<UpdateTaskEvent>(_onTaskUpdated);
-    on<FilterTasksByMenuIdEvent>(_onFilterTasksByMenuId);
-    on<UpdateTaskStatusEvent>(_onMarkTaskAsCompleted); // Handle completion event
+    on<MarkTaskAsCompleted>(_onMarkTaskAsCompleted);
   }
   Future<void> _ontaskSubmitted(
       TaskSubmitted event, Emitter<TaskState> emit) async {
@@ -86,14 +85,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       logger.e("Error fetching tasks: $e");
       emit(TaskFailure(message: 'Failed to fetch tasks.'));
     }
-  }
-
-  void _onFilterTasksByMenuId(
-      FilterTasksByMenuIdEvent event, Emitter<TaskState> emit) {
-    // Filter tasks by selected menuId from allTasks
-    final filteredTasks =
-        allTasks.where((task) => task.menuId == event.menuId).toList();
-    emit(TaskLoaded(filteredTasks)); // Emit filtered tasks
   }
 
   Future<void> requestExactAlarmPermission() async {
@@ -183,13 +174,13 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     try {
       // Await the updateTask call to get the success status
       final isUpdated = await taskRepository.updateTask(
-        taskId: event.taskId,
-        task: event.task,
-        date: event.date,
-        time: event.time,
-        menuId: event.menuId,
-      );
-
+          taskId: event.taskId,
+          task: event.task,
+          date: event.date,
+          time: event.time,
+          menuId: event.menuId,
+          isFinished: event.isfinished);
+      print('Task update status: $isUpdated, isFinished: ${event.isfinished}');
       if (isUpdated) {
         // Fetch updated tasks list if update was successful
         final updatedTasks = await taskRepository.fetchTasks(
@@ -206,20 +197,30 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       emit(TaskFailure(message: e.toString()));
     }
   }
-   void _onMarkTaskAsCompleted(UpdateTaskStatusEvent event, Emitter<TaskState> emit) {
-    // Mark task as completed and update finishedTasks
-    final updatedTasks = allTasks.map((task) {
-      if (task.id == event.taskId) {
-        return task.copyWith(finished: event.finished);
+
+  Future<void> _onMarkTaskAsCompleted(
+      MarkTaskAsCompleted event, Emitter<TaskState> emit) async {
+    emit(TaskLoading());
+    try {
+      // Call the task repository to mark the task as completed
+      await taskRepository.completedTask(event.taskId);
+
+      // Fetch the updated list of tasks after marking one as completed
+      final userId = taskRepository.userRepository.getUserId();
+      final date = taskRepository.date();
+      if (userId != null) {
+        final updatedTasks =
+            await taskRepository.fetchTasks(userId: userId, date: date);
+
+        emit(TaskUpdatedSuccess(sucess: updatedTasks));
+      } else {
+        emit(TaskFailure(message: "User ID is missing."));
       }
-      return task;
-    }).toList();
-
-    // Update both lists
-    allTasks = updatedTasks;
-    finishedTasks = updatedTasks.where((task) => task.finished).toList();
-
-     emit(TaskSuccess(taskList: updatedTasks, menuMap: {})); // Emit the updated task list
-    emit(FinishedTasksLoaded(finishedTasks));
+    } catch (error) {
+      emit(TaskFailure(message: error.toString()));
+    }
   }
+
+  
 }
+    

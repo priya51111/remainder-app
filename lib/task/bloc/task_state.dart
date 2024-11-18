@@ -53,11 +53,11 @@ class TaskDeleteSuccess extends TaskState {}
 
 class TaskDeleteFailure extends TaskState {
   final String message;
-
   TaskDeleteFailure(this.message);
 }
 
-class FinishedTasksLoaded extends TaskState {
-  final List<Tasks> tasksList;
-  FinishedTasksLoaded(this.tasksList);
+class TaskMarkedAsCompleted extends TaskState {
+  final String message;
+
+  TaskMarkedAsCompleted({required this.message});
 }

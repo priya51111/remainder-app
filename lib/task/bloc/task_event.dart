@@ -19,10 +19,18 @@ class TaskSubmitted extends TaskEvent {
 class FetchTaskEvent extends TaskEvent {
   final String userId;
   final String date;
-  final String? menuId;
-  FetchTaskEvent({required this.userId, required this.date,this.menuId});
+  
+  final bool? finished; // Add this line
+
+  FetchTaskEvent({
+    required this.userId,
+    required this.date,
+   
+    this.finished, // Add this line
+  });
+
   @override
-  List<Object> get props => [userId, date];
+  List<Object> get props => [userId, date]; // Include finished in props
 }
 
 
@@ -37,31 +45,23 @@ class UpdateTaskEvent extends TaskEvent{
   final String date;
   final String time;
   final String menuId;
-
+  final bool isfinished;
    UpdateTaskEvent({
     required this.taskId,
     required this.task,
     required this.date,
     required this.time,
     required this.menuId,
-  
+   required this.isfinished
   });
 }
-// Event to filter tasks by a specific menuId
-class FilterTasksByMenuIdEvent extends TaskEvent {
-  final String menuId;
-
-  FilterTasksByMenuIdEvent( {required this.menuId});
-}
-
 class MarkTaskAsCompleted extends TaskEvent {
-  final String taskId;
+  final String taskId; // The task ID to update
 
-  MarkTaskAsCompleted(this.taskId);
+  MarkTaskAsCompleted({required this.taskId});
 }
-class UpdateTaskStatusEvent extends TaskEvent {
-  final String taskId;
-  final bool finished;
 
-  UpdateTaskStatusEvent({required this.taskId, required this.finished});
-}
+// task_event.dart
+
+
+
