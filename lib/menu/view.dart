@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:testing/logout/LogoutPage.dart';
 import 'package:testing/addBatchMode.dart';
 import 'package:testing/settings.dart';
+
 import 'package:testing/task/bloc/task_event.dart';
 import 'package:testing/task/models.dart';
 import 'package:testing/task/repository/task_repository.dart';
@@ -24,7 +26,8 @@ enum Menu {
   SendFeedback,
   FollowUs,
   Invite,
-  Settings
+  Settings,
+  Logout
 }
 
 class SimplePage extends StatefulWidget {
@@ -85,6 +88,17 @@ class _SimplePageState extends State<SimplePage> {
 
   List<Tasks> _getFilteredTasks(TaskState state) {
     if (state is TaskSuccess) {
+      print('Dropdown Value: $dropdownValue'); // Debugging line
+      print('Total Tasks: ${state.taskList.length}'); // Debugging line
+
+      if (dropdownValue == 'Finished') {
+        final finishedTasks =
+            state.taskList.where((task) => task.finished).toList();
+        print(
+            'Finished Tasks Count: ${finishedTasks.length}'); // Debugging line
+        return finishedTasks;
+      } else {
+        return state.taskList;
       print('Dropdown Value: $dropdownValue');
       print('Total Tasks: ${state.taskList.length}');
 
@@ -92,6 +106,7 @@ class _SimplePageState extends State<SimplePage> {
         return state.taskList.where((task) => task.isFinished).toList();
       } else {
         return state.taskList.where((task) => !task.isFinished).toList();
+
       }
     }
     return [];
@@ -105,6 +120,25 @@ class _SimplePageState extends State<SimplePage> {
         backgroundColor: Color.fromARGB(135, 33, 149, 243),
         title: Row(
           children: [
+            Icon(Icons.check_circle, size: 30),
+            DropdownButton<String>(
+              value: dropdownValue,
+              hint: Text('Select'),
+              items: dropdownItems.map((String item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(item),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                if (value == 'New List') {
+                  _showNewMenuDialog();
+                } else {
+                  setState(() {
+                    dropdownValue = value;
+                  });
+                }
+              },
             Icon(
               Icons.check_circle,
               size: 30,
@@ -364,14 +398,16 @@ class _SimplePageState extends State<SimplePage> {
           case Menu.RemoveAds:
             break;
           case Menu.MoreApps:
-          // TODO: Handle this case.
           case Menu.SendFeedback:
-          // TODO: Handle this case.
           case Menu.FollowUs:
-          // TODO: Handle this case.
           case Menu.Invite:
-          // TODO: Handle this case.
           case Menu.Settings:
+
+            
+          case Menu.Logout:
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => LogoutPage()));
+
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => settings()));
                 
@@ -412,6 +448,11 @@ class _SimplePageState extends State<SimplePage> {
         const PopupMenuItem<Menu>(
           value: Menu.Settings,
           child: Text('Settings',
+              style: TextStyle(color: Colors.white, fontSize: 17)),
+        ),
+        const PopupMenuItem<Menu>(
+          value: Menu.Settings,
+          child: Text('Logout',
               style: TextStyle(color: Colors.white, fontSize: 17)),
         ),
       ],
@@ -491,4 +532,5 @@ class _SimplePageState extends State<SimplePage> {
       },
     );
   }
+}
 }
