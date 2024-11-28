@@ -34,7 +34,10 @@ class _LogoutPageState extends State<LogoutPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Logout successful')),
               );
-                Navigator.popAndPushNamed(context, '/login');
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                '/login',
+                (route) => false, // Removes all previous routes
+              );
             } else if (state is LogoutFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Logout failed: ${state.error}')),

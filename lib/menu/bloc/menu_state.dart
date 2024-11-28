@@ -1,4 +1,3 @@
-
 import '../model.dart';
 
 abstract class MenuState {}
@@ -12,18 +11,28 @@ class MenuLoaded extends MenuState {
 
   MenuLoaded({required this.menuList});
 }
+
 class MenuCreated extends MenuState {
-  final String menuId; // Required
-  final String menuname; // Optional
+  final String menuId;
+  final String menuname;
 
-  MenuCreated({required this.menuId,  required this.menuname}); // menuname is optional
-
-  
+  MenuCreated(
+      {required this.menuId, required this.menuname}); // menuname is optional
 }
 
+class MenuUpdateSuccess extends MenuState {
+  final List<Menus> updatedMenus;
+  MenuUpdateSuccess({
+    required this.updatedMenus,
+  });
+  @override
+  List<Object?> get props => [updatedMenus];
+}
 
 class MenuError extends MenuState {
   final String message;
 
   MenuError({required this.message});
 }
+
+class MenuDeleteSucess extends MenuState {}

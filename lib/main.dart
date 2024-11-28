@@ -90,6 +90,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => MenuBloc(
             menuRepository: MenuRepository(userRepository: UserRepository()),
+            userRepository: UserRepository()
           ),
         ),
         BlocProvider(

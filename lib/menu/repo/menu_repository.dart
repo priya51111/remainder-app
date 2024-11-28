@@ -86,75 +86,161 @@ class MenuRepository {
   String getdate() {
     return box.read('date') ?? ''; // Return empty string if null
   }
-    final List<String> defaultMenus = ["Wishlist", "Shopping", "Default","Personal","Work"];
+
+  final List<String> defaultMenus = [
+    "Wishlist",
+    "Shopping",
+    "Default",
+    "Personal",
+    "Work"
+  ];
   // Method to fetch menus based on userId and date
   Future<List<Menus>> fetchMenus(
-    {required String userId, required String providedDate}) async {
-  try {
-    // Retrieve the userId
-    final userId = userRepository.getUserId();
-    logger.i("UserId: $userId");
+      {required String userId, required String providedDate}) async {
+    try {
+      // Retrieve the userId
+      final userId = userRepository.getUserId();
+      logger.i("UserId: $userId");
 
-    if (userId == null) {
-      throw Exception('User ID is missing');
-    }
-
-    // Prioritize the providedDate. Use the saved date only if providedDate is empty
-    final date = providedDate.isNotEmpty ? providedDate : box.read('date');
-    logger.i("Using Date: $date");
-
-    if (date.isEmpty) {
-      throw Exception('Date is missing');
-    }
-
-    // Fetch the token
-    final token = await userRepository.getToken();
-    if (token == null) {
-      throw Exception('Token is missing');
-    }
-
-    // Make the GET request to fetch menus
-    final response = await http.get(
-      Uri.parse('$fetchMenusUrl/$userId/$date'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    logger.i("API Response: ${response.statusCode} - ${response.body}");
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['status'] == 'success' && data['data']['menu'] != null) {
-        List<Menus> menus = (data['data']['menu'] as List)
-            .map((menu) => Menus.fromJson(menu))
-            .toList();
-        
-        // Create default menus if needed
-        await _createDefaultMenusIfNeeded(menus, userId, date);
-        return menus;
-      } else {
-        throw Exception('Menu not found in response');
+      if (userId == null) {
+        throw Exception('User ID is missing');
       }
-    } else {
+
+      // Prioritize the providedDate. Use the saved date only if providedDate is empty
+      final date = providedDate.isNotEmpty ? providedDate : box.read('date');
+      logger.i("Using Date: $date");
+
+      if (date.isEmpty) {
+        throw Exception('Date is missing');
+      }
+
+      // Fetch the token
+      final token = await userRepository.getToken();
+      if (token == null) {
+        throw Exception('Token is missing');
+      }
+
+      // Make the GET request to fetch menus
+      final response = await http.get(
+        Uri.parse('$fetchMenusUrl/$userId/$date'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      logger.i("API Response: ${response.statusCode} - ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'success' && data['data']['menu'] != null) {
+          List<Menus> menus = (data['data']['menu'] as List)
+              .map((menu) => Menus.fromJson(menu))
+              .toList();
+
+          // Create default menus if needed
+          await _createDefaultMenusIfNeeded(menus, userId, date);
+          return menus;
+        } else {
+          throw Exception('Menu not found in response');
+        }
+      } else {
+        throw Exception('Failed to fetch menus');
+      }
+    } catch (error) {
+      logger.e("Error fetching menus: $error");
       throw Exception('Failed to fetch menus');
     }
-  } catch (error) {
-    logger.e("Error fetching menus: $error");
-    throw Exception('Failed to fetch menus');
   }
-}
 
-   Future<void> _createDefaultMenusIfNeeded(List<Menus> existingMenus, String userId, String date) async {
-    final existingMenuNames = existingMenus.map((menu) => menu.menuname).toList();
-     logger.i('Existing menu names: $existingMenuNames');
+  Future<void> _createDefaultMenusIfNeeded(
+      List<Menus> existingMenus, String userId, String date) async {
+    final existingMenuNames =
+        existingMenus.map((menu) => menu.menuname).toList();
+    logger.i('Existing menu names: $existingMenuNames');
     for (var defaultMenu in defaultMenus) {
       if (!existingMenuNames.contains(defaultMenu)) {
         // If the default menu is not present, create it
         await createMenu(defaultMenu, date);
         logger.i('Default menu "$defaultMenu" created');
       }
+    }
+  }
+
+  Future<void> deletemenu(String menuId) async {
+    // Fetch the token
+    final token = await userRepository.getToken();
+
+    if (token == null) {
+      throw Exception('Token is missing');
+    }
+
+    // Log the token and menuId for debugging
+    logger.i('Token: $token');
+    logger.i('Attempting to delete menu with menuId: $menuId');
+
+    // Construct the URL, substituting menuId where id is required
+    final url =
+        Uri.parse('https://app-project-9.onrender.com/api/menu/menu/$menuId');
+
+    try {
+      // Send the DELETE request
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Log the API response status and body
+      logger.i('API Response Status Code: ${response.statusCode}');
+      logger.i('API Response Body: ${response.body}');
+
+      // Check if the response indicates success
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete menu');
+      }
+
+      logger.i('Menu with ID $menuId deleted successfully');
+    } catch (e) {
+      logger.e('Error deleting menu: $e');
+      throw Exception('Failed to delete menu');
+    }
+  }
+
+  Future<bool> updateMenu({
+    required String menuId,
+    required String menuname,
+  }) async {
+    final token = await userRepository.getToken();
+
+    logger.i('Token: $token, Menu ID: $menuId');
+    logger.i('Attempting to update menu with ID: $menuId');
+
+    final url = Uri.parse(
+      'https://app-project-9.onrender.com/api/task/updatetask/$menuId',
+    );
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'menuname': menuname,
+        }),
+      );
+
+      // Log the API response status and body
+      logger.i('API Response Status Code: ${response.statusCode}');
+      logger.i('API Response Body: ${response.body}');
+
+      return response.statusCode == 200;
+    } catch (e) {
+      logger.e('Error updating menu: $e');
+      return false;
     }
   }
 }

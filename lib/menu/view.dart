@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:testing/addBatchMode.dart';
+import 'package:testing/menulistpage.dart';
 import 'package:testing/settings.dart';
 import 'package:testing/task/bloc/task_event.dart';
 import 'package:testing/task/models.dart';
 import 'package:testing/task/repository/task_repository.dart';
 import 'package:testing/tasklistpage.dart';
 import '../login/repository/repository.dart';
+import '../logout/LogoutPage.dart';
 import '../task/bloc/task_bloc.dart';
 import '../task/bloc/task_state.dart';
 import '../task/view/view.dart';
@@ -24,7 +26,9 @@ enum Menu {
   SendFeedback,
   FollowUs,
   Invite,
-  Settings
+  Settings,
+  MenuPage,
+  Logout
 }
 
 class SimplePage extends StatefulWidget {
@@ -363,11 +367,12 @@ class _SimplePageState extends State<SimplePage> {
                     builder: (context) => Addbatchmode(
                           isEditMode: false,
                         )));
+          
             break;
           case Menu.RemoveAds:
             break;
           case Menu.MoreApps:
-          // TODO: Handle this case.
+          
           case Menu.SendFeedback:
           // TODO: Handle this case.
           case Menu.FollowUs:
@@ -377,6 +382,21 @@ class _SimplePageState extends State<SimplePage> {
           case Menu.Settings:
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => settings()));
+                  break; 
+                  case Menu.Logout:
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>LogoutPage()));
+          
+            break;
+             case Menu.MenuPage:
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MenuListPage(
+                       
+                        )));
 
           // TODO: Handle this case.
         }
@@ -415,6 +435,16 @@ class _SimplePageState extends State<SimplePage> {
         const PopupMenuItem<Menu>(
           value: Menu.Settings,
           child: Text('Settings',
+              style: TextStyle(color: Colors.white, fontSize: 17)),
+        ),
+         const PopupMenuItem<Menu>(
+          value: Menu.MenuPage,
+          child: Text('MenuPage',
+              style: TextStyle(color: Colors.white, fontSize: 17)),
+        ),
+        const PopupMenuItem<Menu>(
+          value: Menu.Logout,
+          child: Text('Logout',
               style: TextStyle(color: Colors.white, fontSize: 17)),
         ),
       ],
