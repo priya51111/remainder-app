@@ -22,7 +22,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   String channelName = 'Task Reminders';
   String channelDescription = 'Notifications for upcoming tasks and reminders.';
   final GetStorage box = GetStorage();
-  List<Tasks> allTasks = []; // Store all fetched tasks
+  List<Tasks> allTasks = [];
   final TaskRepository taskRepository;
   final FlutterLocalNotificationsPlugin localNotificationsPlugin;
   final Logger logger = Logger();
@@ -164,7 +164,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       add(FetchTaskEvent(
         userId: taskRepository.userRepository.getUserId()!,
         date: taskRepository.date(),
-      )); // Refresh task list
+      )); 
     } catch (e) {
       emit(TaskDeleteFailure(e.toString()));
     }
