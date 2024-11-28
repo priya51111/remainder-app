@@ -46,7 +46,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     }
   }
 
-  // Handle fetching menus
+ 
   Future<void> _onFetchMenus(
       FetchMenusEvent event, Emitter<MenuState> emit) async {
     emit(MenuLoading()); 

@@ -7,7 +7,7 @@ import '../../login/repository/repository.dart';
 import '../models.dart';
 
 class TaskRepository {
-  final GetStorage box = GetStorage(); // Initialize GetStorage instance
+  final GetStorage box = GetStorage();
   final UserRepository userRepository;
   final MenuRepository menuRepository;
   final Logger logger = Logger();
@@ -28,7 +28,7 @@ class TaskRepository {
 
     logger.i('User ID: $userId, Menu ID: $menuId, Token: $token');
 
-    // Log the values to ensure they're not null
+    
     logger.i('Task: $task, Date: $date, Time: $time');
 
     try {
@@ -52,24 +52,23 @@ class TaskRepository {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
-        // Check if data and task are present in the response
+        
         if (responseData['data'] != null &&
             responseData['data']['task'] != null) {
-          // Access the task data
+         
           final taskData = responseData['data']['task'];
-          final taskId = taskData['_id']; // Extract taskId from response
+          final taskId = taskData['_id'];
 
-          // Save taskId and other information in GetStorage
+          
           box.write('taskId', taskId);
           logger.i('Saved taskId: $taskId');
           box.write('date', date);
           logger.i('Saved: $date');
 
-          // Create a Tasks object from the response data
+         
           final createdTask = Tasks.fromJson(
-              taskData); // Ensure you have a fromJson method in your Tasks model
-
-          return createdTask; // Return the created task
+              taskData);
+          return createdTask; 
         } else {
           throw Exception('Invalid API response: Task data is missing');
         }
@@ -78,23 +77,31 @@ class TaskRepository {
       }
     } catch (error) {
       logger.e('Error creating task: $error');
-      // Always throw an exception on error
+     
       throw Exception('Error creating task: $error');
     }
   }
 
   String date() {
-    return box.read('date') ?? ''; // Return empty string if null
+    return box.read('date') ?? ''; 
   }
 
   Future<List<Tasks>> fetchTasks(
       {required String userId, required String date}) async {
     try {
+<<<<<<< HEAD
     
       final userId = userRepository.getUserId();
       final dates = box.read('date') ?? ''; 
 
     
+=======
+     
+      final userId = userRepository.getUserId();
+      final dates = box.read('date') ?? ''; 
+
+      
+>>>>>>> e1f1fc14f691db507cce535344454b65218f2176
       logger.i('Fetched User ID: $userId, Fetched Date: $dates');
 
       if (userId == null || dates.isEmpty) {

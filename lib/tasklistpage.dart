@@ -26,15 +26,12 @@ class _TasklistpageState extends State<Tasklistpage> {
   @override
   void initState() {
     super.initState();
-    userRepository = UserRepository(); // Initialize the user repository
-    menuRepository = MenuRepository(
-        userRepository:
-            userRepository); // Pass user repository to menu repository
+    userRepository = UserRepository();
+    menuRepository = MenuRepository(userRepository: userRepository);
     taskRepository = TaskRepository(
       userRepository: userRepository,
       menuRepository: menuRepository,
-    ); // Pass both repositories to task repositoryn
-
+    );
     _fetchTasks();
   }
 
@@ -105,7 +102,7 @@ class _TasklistpageState extends State<Tasklistpage> {
                   itemBuilder: (context, index) {
                     final task = state.taskList[index];
                     final menuname = state.menuMap[task.menuId] ??
-                        'Unknown menu'; // Fetch the menu name
+                        'Unknown menu'; 
                     return Padding(
                       padding: const EdgeInsets.all(9),
                       child: Container(
@@ -120,21 +117,29 @@ class _TasklistpageState extends State<Tasklistpage> {
                             Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 100),
+                                  padding: const EdgeInsets.only(right: 38),
                                   child: Text(
                                     task.task,
-                                    style: TextStyle(color: Colors.white),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
                                   ),
-                                ), // Display task name
-                                SizedBox(width: 10),
-                                Text(
-                                  '${task.date} ${task.time}',
-                                  style: TextStyle(color:Color.fromARGB(135, 33, 149, 243), ),
-                                ), // Display date and time
-                                
+                                ),
+                                SizedBox(width: 20),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    '${task.date} ${task.time}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ), 
+
                                 SizedBox(width: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 30),
+                                  padding: const EdgeInsets.only(right: 19),
                                   child: Text(
                                     menuname,
                                     style: TextStyle(color: Colors.white),
@@ -142,28 +147,35 @@ class _TasklistpageState extends State<Tasklistpage> {
                                 ), // Di
                               ],
                             ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                    ))
-                              ],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 150, top: 11),
+                              child: Column(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color: Colors.white,
+                                      ))
+                                ],
+                              ),
                             ),
-                            Column(
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      context.read<TaskBloc>().add(
-                                          DeleteTaskEvent(taskId: task.id));
-                                    },
-                                    icon: Icon(
-                                      Icons.delete,
-                                      color: Colors.white,
-                                    ))
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Column(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        context.read<TaskBloc>().add(
+                                            DeleteTaskEvent(taskId: task.id));
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      ))
+                                ],
+                              ),
                             )
                           ],
                         ),
