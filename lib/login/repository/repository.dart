@@ -12,7 +12,7 @@ class UserRepository {
   final Logger logger = Logger();
 
  
-  Future<User> createUser(String email, String password) async {
+  Future<User> Sigin(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception("Email and password are missing");
     }
@@ -62,7 +62,7 @@ class UserRepository {
     return userId;
   }
 
-  Future<AuthResponse> signIn(String email, String password) async {
+  Future<AuthResponse> logIn(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception("Email and password cannot be empty");
     }
@@ -103,40 +103,14 @@ class UserRepository {
     return prefs.getString('token');
   }
 
-  Future<void> signOut() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.remove('token');
-    prefs.remove('tokenExpiry');
-  }
+ 
 
-  Future<void> saveUsersToLocal(List<User> users) async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> userList =
-        users.map((user) => json.encode(user.toJson())).toList();
-    await prefs.setStringList('users', userList);
-  }
+ 
 
-  Future<List<User>> getUsersFromLocal() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String>? userList = prefs.getStringList('users');
-    if (userList != null) {
-      return userList
-          .map((userStr) => User.fromJson(json.decode(userStr)))
-          .toList();
-    }
-    return [];
-  }
 
   String generateUserId() {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  Future<bool> isTokenExpired() async {
-    final prefs = await SharedPreferences.getInstance();
-    final tokenExpiry = prefs.getString('tokenExpiry');
-    if (tokenExpiry == null) return true;
 
-    final expiryDate = DateTime.parse(tokenExpiry);
-    return DateTime.now().isAfter(expiryDate);
-  }
 }

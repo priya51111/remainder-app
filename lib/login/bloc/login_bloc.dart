@@ -28,7 +28,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
      
       final createdUser =
-          await userRepository.createUser(event.email, event.password);
+          await userRepository.Sigin(event.email, event.password);
 
      
       emit(UserCreated(createdUser));
@@ -36,7 +36,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       logger.i('User created successfully: ${createdUser.userId}');
 
       final authResponse =
-          await userRepository.signIn(event.email, event.password);
+          await userRepository.logIn(event.email, event.password);
 
      
       emit(UserAuthenticated(authResponse.token));
@@ -55,7 +55,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(UserLoading());
     try {
       final authResponse =
-          await userRepository.signIn(event.email, event.password);
+          await userRepository.logIn(event.email, event.password);
 
       
       emit(UserAuthenticated(authResponse.token));

@@ -90,11 +90,11 @@ class TaskRepository {
   Future<List<Tasks>> fetchTasks(
       {required String userId, required String date}) async {
     try {
-      // Fetch userId and date from UserRepository and GetStorage, respectively
+    
       final userId = userRepository.getUserId();
-      final dates = box.read('date') ?? ''; // Ensure date is fetched correctly
+      final dates = box.read('date') ?? ''; 
 
-      // Log the fetched userId and date
+    
       logger.i('Fetched User ID: $userId, Fetched Date: $dates');
 
       if (userId == null || dates.isEmpty) {

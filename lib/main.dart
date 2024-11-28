@@ -24,7 +24,11 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-  await requestExactAlarmPermission();
+  
+  // Initialize SharedPreferences to check for saved user token
+  final prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('token');
+  
   tz.initializeTimeZones();
 
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -41,19 +45,13 @@ void main() async {
     },
   );
 
-  runApp(const MyApp());
-}
-
-Future<void> requestExactAlarmPermission() async {
-  if (await Permission.scheduleExactAlarm.isDenied) {
-    await Permission.scheduleExactAlarm.request();
-  }
+  runApp(MyApp(isUserLoggedIn: token != null));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
- 
+  final bool isUserLoggedIn;
+  
+  const MyApp({super.key, required this.isUserLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -85,31 +83,28 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => MenuBloc(
             menuRepository: MenuRepository(userRepository: UserRepository()),
-            userRepository: UserRepository()
+            userRepository: UserRepository(),
           ),
         ),
         BlocProvider(
           create: (context) => LogoutBloc(
-            logoutRepository:
-                LogoutRepository(userRepository: UserRepository()),
+            logoutRepository: LogoutRepository(userRepository: UserRepository()),
           ),
         ),
       ],
-      child:
-         
-             MaterialApp(
-              title: 'Task Manager',
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-              ),
-              navigatorKey: navigatorKey,
-              home: const Loginpage(), // Show login page if not logged in
-              routes: {
-                '/login': (context) => const Loginpage(),
-              },
-            )
-          
-        
+      child: MaterialApp(
+        title: 'Task Manager',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        navigatorKey: navigatorKey,
+        // Check if the user is logged in and navigate accordingly
+        home: isUserLoggedIn ? SimplePage() :  Loginpage(),
+        routes: {
+          '/login': (context) =>  Loginpage(),
+        },
+      ),
     );
   }
 }
+
