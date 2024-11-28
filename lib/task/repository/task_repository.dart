@@ -89,19 +89,11 @@ class TaskRepository {
   Future<List<Tasks>> fetchTasks(
       {required String userId, required String date}) async {
     try {
-<<<<<<< HEAD
-    
+
       final userId = userRepository.getUserId();
       final dates = box.read('date') ?? ''; 
 
-    
-=======
-     
-      final userId = userRepository.getUserId();
-      final dates = box.read('date') ?? ''; 
-
-      
->>>>>>> e1f1fc14f691db507cce535344454b65218f2176
+  
       logger.i('Fetched User ID: $userId, Fetched Date: $dates');
 
       if (userId == null || dates.isEmpty) {
