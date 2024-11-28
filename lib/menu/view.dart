@@ -64,7 +64,7 @@ class _SimplePageState extends State<SimplePage> {
       context.read<MenuBloc>().add(FetchMenusEvent(userId: userId, date: date));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('User ID is missing'),
             duration: Duration(seconds: 5)),
       );
@@ -80,7 +80,7 @@ class _SimplePageState extends State<SimplePage> {
           FetchTaskEvent(userId: userIds, date: dates, finished: finished));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('User IDs is missing'),
             duration: Duration(seconds: 5)),
       );
@@ -104,31 +104,31 @@ class _SimplePageState extends State<SimplePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(134, 4, 83, 147),
+      backgroundColor: const Color.fromARGB(134, 4, 83, 147),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(135, 33, 149, 243),
+        backgroundColor: const Color.fromARGB(135, 33, 149, 243),
         title: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.check_circle,
               size: 30,
               color: Colors.white,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Padding(
-              padding: EdgeInsets.only(top: 15),
-              child: Container(
+              padding: const EdgeInsets.only(top: 15),
+              child: SizedBox(
                 width: 160.0,
                 height: 60.0,
                 child: DropdownButton<String>(
                   value: dropdownValue,
-                  hint: Text('Select'),
+                  hint: const Text('Select'),
                   items: dropdownItems.map((String item) {
                     return DropdownMenuItem<String>(
                       value: item,
                       child: Text(
                         item,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     );
                   }).toList(),
@@ -144,12 +144,12 @@ class _SimplePageState extends State<SimplePage> {
                       _fetchTasks(false);
                     }
                   },
-                  dropdownColor: Color.fromARGB(135, 33, 149, 243),
+                  dropdownColor: const Color.fromARGB(135, 33, 149, 243),
                   iconEnabledColor: Colors.white, 
 
                   isExpanded:
                       true, 
-                  underline: SizedBox(), 
+                  underline: const SizedBox(), 
                 ),
               ),
             ),
@@ -166,14 +166,14 @@ class _SimplePageState extends State<SimplePage> {
                     SnackBar(
                       content:
                           Text('Menu created successfully: ${state.menuId}'),
-                      duration: Duration(seconds: 3),
+                      duration: const Duration(seconds: 3),
                     ),
                   );
                 } else if (state is MenuError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Error: ${state.message}'),
-                      duration: Duration(seconds: 5),
+                      duration: const Duration(seconds: 5),
                     ),
                   );
                 } else if (state is MenuLoaded) {
@@ -187,12 +187,12 @@ class _SimplePageState extends State<SimplePage> {
                   });
                 }
               },
-              child: SizedBox.shrink(),
+              child: const SizedBox.shrink(),
             ),
           ],
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           _buildPopupMenu()
         ],
       ),
@@ -202,7 +202,7 @@ class _SimplePageState extends State<SimplePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                duration: Duration(seconds: 3),
+                duration: const Duration(seconds: 3),
               ),
             );
 
@@ -210,7 +210,7 @@ class _SimplePageState extends State<SimplePage> {
             _fetchTasks(false);
           } else if (state is TaskSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Text('Tasks fetched successfully'),
                 duration: Duration(seconds: 2),
               ),
@@ -219,12 +219,12 @@ class _SimplePageState extends State<SimplePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Error: ${state.message}'),
-                duration: Duration(seconds: 3),
+                duration: const Duration(seconds: 3),
               ),
             );
           } else if (state is TaskUpdatedSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Text('Task updated successfully'),
                 duration: Duration(seconds: 2),
               ),
@@ -234,7 +234,7 @@ class _SimplePageState extends State<SimplePage> {
         child: BlocBuilder<TaskBloc, TaskState>(
           builder: (context, state) {
             if (state is TaskLoading || state is TaskEditLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (state is TaskSuccess) {
               final filteredTasks = _getFilteredTasks(state);
               return ListView.builder(
@@ -261,7 +261,7 @@ class _SimplePageState extends State<SimplePage> {
                         width: 100,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
-                          color: Color.fromARGB(135, 33, 149, 243),
+                          color: const Color.fromARGB(135, 33, 149, 243),
                         ),
                         child: Row(
                           children: [
@@ -278,7 +278,7 @@ class _SimplePageState extends State<SimplePage> {
                                           );
                                     }
                                   },
-                                  side: BorderSide(color: Colors.white),
+                                  side: const BorderSide(color: Colors.white),
                                   activeColor: Colors.blue.shade900,
                                   checkColor: Colors.white,
                                 ),
@@ -290,25 +290,25 @@ class _SimplePageState extends State<SimplePage> {
                                   padding: const EdgeInsets.only(right: 100),
                                   child: Text(
                                     task.task,
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 80),
                                   child: Text(
                                     '${task.date}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Color.fromARGB(135, 33, 149, 243),
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 85   ),
                                   child: Text(
                                     task.time,
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -323,7 +323,7 @@ class _SimplePageState extends State<SimplePage> {
             } else if (state is TaskFailure) {
               return Center(child: Text('Error: ${state.message}'));
             } else {
-              return Center(child: Text('No tasks available'));
+              return const Center(child: Text('No tasks available'));
             }
           },
         ),
@@ -346,8 +346,8 @@ class _SimplePageState extends State<SimplePage> {
   Widget _buildPopupMenu() {
     return PopupMenuButton<Menu>(
       elevation: 0,
-      color: Color.fromARGB(135, 33, 149, 243),
-      constraints: BoxConstraints.tightFor(height: 340, width: 200),
+      color: const Color.fromARGB(135, 33, 149, 243),
+      constraints: const BoxConstraints.tightFor(height: 340, width: 200),
       icon: const Icon(
         Icons.more_vert,
         color: Colors.white,
@@ -357,14 +357,14 @@ class _SimplePageState extends State<SimplePage> {
           case Menu.TaskLists:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Tasklistpage()),
+              MaterialPageRoute(builder: (context) => const Tasklistpage()),
             );
             break;
           case Menu.AddInBatchMode:
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Addbatchmode(
+                    builder: (context) => const Addbatchmode(
                           isEditMode: false,
                         )));
           
@@ -374,14 +374,14 @@ class _SimplePageState extends State<SimplePage> {
           case Menu.MoreApps:
           
           case Menu.SendFeedback:
-          // TODO: Handle this case.
+         
           case Menu.FollowUs:
-          // TODO: Handle this case.
+         
           case Menu.Invite:
-          // TODO: Handle this case.
+          
           case Menu.Settings:
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => settings()));
+                context, MaterialPageRoute(builder: (context) => const settings()));
                   break; 
                   case Menu.Logout:
             Navigator.push(
@@ -394,7 +394,7 @@ class _SimplePageState extends State<SimplePage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => MenuListPage(
+                    builder: (context) => const MenuListPage(
                        
                         )));
 
@@ -461,7 +461,7 @@ class _SimplePageState extends State<SimplePage> {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          title: Text(
+          title: const Text(
             'Create New Menu',
             style: TextStyle(
               color: Color.fromARGB(201, 4, 83, 147),
@@ -472,12 +472,12 @@ class _SimplePageState extends State<SimplePage> {
             children: [
               TextField(
                 controller: menuController,
-                decoration: InputDecoration(hintText: 'Menu Name'),
+                decoration: const InputDecoration(hintText: 'Menu Name'),
               ),
               TextField(
                 controller: dateController,
                 readOnly: true,
-                decoration: InputDecoration(hintText: 'Select Date'),
+                decoration: const InputDecoration(hintText: 'Select Date'),
                 onTap: () async {
                   selectedDate = await showDatePicker(
                     context: context,
@@ -506,13 +506,13 @@ class _SimplePageState extends State<SimplePage> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                         content: Text('Please fill in all fields'),
                         duration: Duration(seconds: 3)),
                   );
                 }
               },
-              child: Text(
+              child: const Text(
                 'Submit',
                 style: TextStyle(
                   color: Color.fromARGB(201, 4, 83, 147),

@@ -16,7 +16,7 @@ import '../../menu/repo/menu_repository.dart';
 
 
 class Addbatchmode extends StatefulWidget {
-  final Tasks? task; // Optional task parameter for editing
+  final Tasks? task;
   final bool isEditMode;
 
   const Addbatchmode({Key? key, this.task, required this.isEditMode})
@@ -39,13 +39,13 @@ class _CreateTaskPageState extends State<Addbatchmode> {
       : menuRepository = MenuRepository(userRepository: UserRepository());
   String selectedTaskType = 'Default';
   bool _isDateSelected = false;
-  bool _isEditMode = false; // To check if it's an edit operation
+  bool _isEditMode = false; 
   @override
   void initState() {
     super.initState();
     if (widget.task != null) {
       _isEditMode = true;
-      _populateFields(widget.task!); // Populate fields with task data
+      _populateFields(widget.task!); 
     }
     _fetchMenus();
   }
@@ -55,7 +55,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
     _dateController.text = task.date;
     _timeController.text = task.time;
     selectedTaskType =
-        task.menuId.toString(); // or assign the menu name if available
+        task.menuId.toString();
     _isDateSelected = true;
   }
 
@@ -67,7 +67,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
       context.read<MenuBloc>().add(FetchMenusEvent(userId: userId, date: date));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('User ID is missing'),
             duration: Duration(seconds: 5)),
       );
@@ -77,16 +77,16 @@ class _CreateTaskPageState extends State<Addbatchmode> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(134, 4, 83, 147),
+      backgroundColor: const Color.fromARGB(134, 4, 83, 147),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(135, 33, 149, 243),
+        backgroundColor: const Color.fromARGB(135, 33, 149, 243),
         title: Text(_isEditMode ? 'Edit Task' : 'New Task',
             style: TextStyle(color: Colors.white)),
       ),
       body: BlocListener<TaskBloc, TaskState>(
         listener: (context, state) {
           if (state is TaskLoading) {
-            Center(
+            const Center(
               child: CircularProgressIndicator(color: Colors.white),
             );
           } else if (state is TaskSuccess || state is TaskUpdatedSuccess) {
@@ -108,7 +108,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
             child: ListView(
               children: [
                 SizedBox(height: 16),
-                Text(
+                const Text(
                   "What is to be done?",
                   style: TextStyle(
                     color: Color.fromARGB(135, 33, 149, 243),
@@ -117,12 +117,12 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                   ),
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 TextField(
                   controller: _taskController,
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
                     hintText: "Enter Task here",
                     hintStyle: TextStyle(color: Colors.white),
                     enabledBorder: UnderlineInputBorder(
@@ -147,7 +147,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                         activeColor: Colors.blue.shade900,
                         checkColor: Colors.white,
                       ),
-                      Text(
+                      const Text(
                         "Task Finished?",
                         style: TextStyle(
                           color: Colors.white,
@@ -158,12 +158,12 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                     ],
                   ),
 
-                SizedBox(
+                const SizedBox(
                   height: 9,
                 ),
 
-                // Date Input
-                Text(
+                
+                const Text(
                   "Due Date",
                   style: TextStyle(
                     color: Color.fromARGB(135, 33, 149, 243),
@@ -171,10 +171,10 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                     fontSize: 15,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _dateController,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   readOnly: true,
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
@@ -203,7 +203,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                       });
                     }
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Date not set",
                     hintStyle: TextStyle(color: Colors.white),
                     suffixIcon: Icon(Icons.calendar_today, color: Colors.white),
@@ -215,12 +215,12 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                   ),
                 ),
 
-                // Time Input (enabled only if date is selected)
+               
                 if (_isDateSelected) ...[
                   SizedBox(
                     height: 9,
                   ),
-                  Text(
+                  const Text(
                     "Time",
                     style: TextStyle(
                       color: Color.fromARGB(135, 33, 149, 243),
@@ -233,7 +233,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                     controller: _timeController,
                     style: TextStyle(color: Colors.white),
                     readOnly: true,
-                    enabled: _isDateSelected, // Enable only if date is selected
+                    enabled: _isDateSelected, 
                     onTap: _isDateSelected
                         ? () async {
                             TimeOfDay? pickedTime = await showTimePicker(
@@ -260,21 +260,21 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                     decoration: InputDecoration(
                       enabled: _isDateSelected,
                       hintText: "Time not set",
-                      hintStyle: TextStyle(color: Colors.white),
-                      suffixIcon: Icon(Icons.access_time, color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
+                      hintStyle: const TextStyle(color: Colors.white),
+                      suffixIcon: const Icon(Icons.access_time, color: Colors.white),
+                      enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white),
                       ),
                     ),
                   ),
                 ],
-                SizedBox(
+                const SizedBox(
                   height: 9,
                 ),
 
-                Text(
+                const Text(
                   "Add to List",
                   style: TextStyle(
                     color: Color.fromARGB(135, 33, 149, 243),
@@ -282,7 +282,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                     fontSize: 15,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Row(
@@ -291,10 +291,10 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                       child: BlocBuilder<MenuBloc, MenuState>(
                         builder: (context, state) {
                           if (state is MenuLoading) {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           } else if (state is MenuLoaded) {
                             return DropdownButtonFormField<Menus>(
-                              dropdownColor: Color.fromARGB(135, 33, 149, 243),
+                              dropdownColor: const Color.fromARGB(135, 33, 149, 243),
                               value: state.menuList.isNotEmpty
                                   ? state.menuList.first
                                   : null,
@@ -310,7 +310,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                                       menu?.menuname ?? 'Default';
                                 });
                               },
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: "Select Menu",
                                 labelStyle: TextStyle(color: Colors.white),
                                 enabledBorder: UnderlineInputBorder(
@@ -324,7 +324,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                               iconEnabledColor: Colors.white,
                             );
                           } else if (state is MenuError) {
-                            return Text(
+                            return const Text(
                               'Error fetching menus',
                               style: TextStyle(color: Colors.white),
                             );
@@ -334,7 +334,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                       ),
                     ),
                     IconButton(
-                        icon: Icon(Icons.format_list_bulleted_add,
+                        icon: const Icon(Icons.format_list_bulleted_add,
                             color: Colors.white),
                         onPressed: () {
                           _showNewMenuDialog();
@@ -355,11 +355,10 @@ class _CreateTaskPageState extends State<Addbatchmode> {
 
                         if (task.isEmpty || date.isEmpty || time.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                                 content: Text('Please fill in all fields')),
                           );
                         } else {
-                          // Different event for creating vs updating a task
                           if (_isEditMode && widget.task != null) {
                             context.read<TaskBloc>().add(
                                   UpdateTaskEvent(
@@ -440,7 +439,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                 final String menuName = menuController.text.trim();
                 final String date = dateController.text.trim();
                 if (menuName.isNotEmpty && date.isNotEmpty) {
-                  // Trigger the event to create a new menu
+                 
                   context
                       .read<MenuBloc>()
                       .add(CreateMenuEvent(menuname: menuName, date: date));

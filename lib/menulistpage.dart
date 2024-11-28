@@ -35,7 +35,7 @@ class _MenuListPageState extends State<MenuListPage> {
       context.read<MenuBloc>().add(FetchMenusEvent(userId: userId, date: date));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('User ID is missing'),
             duration: Duration(seconds: 5)),
       );
@@ -45,8 +45,13 @@ class _MenuListPageState extends State<MenuListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 2, 43, 77),
       appBar: AppBar(
-        title: const Text('Menus'),
+        backgroundColor: const Color.fromARGB(255, 27, 135, 222),
+        title: const Text(
+          'Menus',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
       body: BlocListener<MenuBloc, MenuState>(
         listener: (context, state) {
@@ -86,23 +91,33 @@ class _MenuListPageState extends State<MenuListPage> {
                 itemBuilder: (context, index) {
                   final menu = menus[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: ListTile(leading:  IconButton(
-                            onPressed: () {
-                              _showEditMenuDialog(context, menu.id, menu.menuname);
-                            },
-                            icon: const Icon(Icons.edit, color: Colors.red),
-                          ),
-                      title: Text(menu.menuname),
-                      subtitle: Text('Date: ${menu.date}'),
-                      trailing:
-                          IconButton(
-                            onPressed: () {
-                              context.read<MenuBloc>().add(deleteMenu(menuId: menu.id));
-                            },
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                          ),
-                         
+                    color: Color.fromARGB(255, 24, 85, 136),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    child: ListTile(
+                      leading: IconButton(
+                        onPressed: () {
+                          _showEditMenuDialog(context, menu.id, menu.menuname);
+                        },
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                      ),
+                      title: Text(
+                        menu.menuname,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      subtitle: Text(
+                        'Date: ${menu.date}',
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 206, 199, 199)),
+                      ),
+                      trailing: IconButton(
+                        onPressed: () {
+                          context
+                              .read<MenuBloc>()
+                              .add(deleteMenu(menuId: menu.id));
+                        },
+                        icon: const Icon(Icons.delete, color: Colors.white),
+                      ),
                     ),
                   );
                 },
@@ -121,8 +136,10 @@ class _MenuListPageState extends State<MenuListPage> {
     );
   }
 
-  void _showEditMenuDialog(BuildContext context, String menuId, String currentMenuname) {
-    final TextEditingController menunameController = TextEditingController(text: currentMenuname);
+  void _showEditMenuDialog(
+      BuildContext context, String menuId, String currentMenuname) {
+    final TextEditingController menunameController =
+        TextEditingController(text: currentMenuname);
 
     showDialog(
       context: context,
@@ -136,7 +153,7 @@ class _MenuListPageState extends State<MenuListPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();  // Close the dialog
+                Navigator.of(context).pop(); // Close the dialog
               },
               child: const Text('Cancel'),
             ),
@@ -146,11 +163,11 @@ class _MenuListPageState extends State<MenuListPage> {
                 if (newMenuname.isNotEmpty) {
                   // Dispatch the event to update the menu
                   context.read<MenuBloc>().add(UpdateMenu(
-                    menuId: menuId,
-                    menuname: newMenuname,
-                  ));
+                        menuId: menuId,
+                        menuname: newMenuname,
+                      ));
                 }
-                Navigator.of(context).pop();  // Close the dialog
+                Navigator.of(context).pop(); // Close the dialog
               },
               child: const Text('Yes'),
             ),

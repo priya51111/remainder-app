@@ -20,7 +20,7 @@ class Loginpage extends StatelessWidget {
       body: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserError) {
-            // Show SnackBar when there's a UserError
+           
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
@@ -177,7 +177,7 @@ class Loginpage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        Signpage()), // Navigate to NewPage
+                                        Signpage()), 
                               );
                             },
                             child: const Text(

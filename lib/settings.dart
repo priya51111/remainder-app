@@ -20,12 +20,12 @@ class _settingsState extends State<settings> {
   bool _isChecked = false;
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(134, 4, 83, 147),
+      backgroundColor: const Color.fromARGB(134, 4, 83, 147),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(55), // Set your preferred height here
+        preferredSize: const Size.fromHeight(55), // Set your preferred height here
         child: AppBar(
-          backgroundColor: Color.fromARGB(135, 33, 149, 243),
-          title: Text(
+          backgroundColor: const Color.fromARGB(135, 33, 149, 243),
+          title: const Text(
             "Settings",
             style: TextStyle(
               color: Colors.white,
@@ -39,13 +39,13 @@ class _settingsState extends State<settings> {
           child: Container(
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                Row(
+                const Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: EdgeInsets.only(left: 20),
                       child: Text(
                         "General",
                         style: TextStyle(
@@ -56,8 +56,8 @@ class _settingsState extends State<settings> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Remove Ads",
@@ -72,18 +72,18 @@ class _settingsState extends State<settings> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Status bar",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -95,7 +95,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _isChecked,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -105,25 +105,25 @@ class _settingsState extends State<settings> {
                     ),
                     subtitle: Text(
                       _isChecked ? 'Enabled' : 'Disabled',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Confrim finshing tasks",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -135,7 +135,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _task,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -145,25 +145,25 @@ class _settingsState extends State<settings> {
                     ),
                     subtitle: Text(
                       _task ? 'Enabled' : 'Disabled',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Confrim finishing tasks",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -175,7 +175,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _repeat,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -185,25 +185,25 @@ class _settingsState extends State<settings> {
                     ),
                     subtitle: Text(
                       _repeat ? 'Enabled' : 'Disabled',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Found in clipboard",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -215,7 +215,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _clipart,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -225,12 +225,12 @@ class _settingsState extends State<settings> {
                     ),
                     subtitle: Text(
                       _clipart ? 'Enabled' : 'Disabled',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "List to show at startup",
@@ -242,8 +242,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "First day of week",
@@ -255,8 +255,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Tme format",
@@ -268,8 +268,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Sort order",
@@ -281,10 +281,10 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: EdgeInsets.only(left: 20),
                       child: Text(
                         "Notifications",
                         style: TextStyle(
@@ -295,8 +295,8 @@ class _settingsState extends State<settings> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Sound",
@@ -311,18 +311,18 @@ class _settingsState extends State<settings> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Voice",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -334,7 +334,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _voice,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -346,25 +346,25 @@ class _settingsState extends State<settings> {
                       _voice
                           ? 'Uses system default speech synthesizer(tts)'
                           : 'Uses system default speech synthesizer(tts)',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Vibration",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -376,7 +376,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _vibration,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -386,12 +386,12 @@ class _settingsState extends State<settings> {
                     ),
                     subtitle: Text(
                       _vibration ? 'Enabled' : 'Disabled',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Task notification",
@@ -406,18 +406,18 @@ class _settingsState extends State<settings> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Day Summary",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -429,7 +429,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _day,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -439,12 +439,12 @@ class _settingsState extends State<settings> {
                     ),
                     subtitle: Text(
                       _day ? 'Enabled' : 'Disabled',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "choose time",
@@ -456,10 +456,10 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: EdgeInsets.only(left: 20),
                       child: Text(
                         "Syncing with Google",
                         style: TextStyle(
@@ -470,8 +470,8 @@ class _settingsState extends State<settings> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Google Account",
@@ -483,8 +483,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "sync mode",
@@ -496,10 +496,10 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: EdgeInsets.only(left: 20),
                       child: Text(
                         "Ouick Task",
                         style: TextStyle(
@@ -513,18 +513,18 @@ class _settingsState extends State<settings> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: ListTile(
-                    title: Text(
+                    title: const Text(
                       "Quick task bar",
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       side: MaterialStateBorderSide.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Color.fromARGB(135, 33, 149, 243),
                           );
                         } else {
-                          return BorderSide(
+                          return const BorderSide(
                             color: Colors.white,
                           );
                         }
@@ -536,7 +536,7 @@ class _settingsState extends State<settings> {
                         return null;
                       }),
                       checkColor: Colors.white,
-                      activeColor: Color.fromARGB(135, 33, 149, 243),
+                      activeColor: const Color.fromARGB(135, 33, 149, 243),
                       value: _iChecked,
                       onChanged: (bool? newValue) {
                         setState(() {
@@ -546,12 +546,12 @@ class _settingsState extends State<settings> {
                     ),
                     subtitle: Text(
                       _iChecked ? 'Enabled' : 'Disabled',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "default due date",
@@ -563,10 +563,10 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: EdgeInsets.only(left: 20),
                       child: Text(
                         "About",
                         style: TextStyle(
@@ -577,8 +577,8 @@ class _settingsState extends State<settings> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Invite friends to the app",
@@ -586,8 +586,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "More Apps",
@@ -595,8 +595,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Send Feedback",
@@ -604,8 +604,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "splenDO",
@@ -617,10 +617,10 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: EdgeInsets.only(left: 20),
                       child: Text(
                         "Follow Us",
                         style: TextStyle(
@@ -631,8 +631,8 @@ class _settingsState extends State<settings> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Facebook",
@@ -640,8 +640,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Instagram",
@@ -649,8 +649,8 @@ class _settingsState extends State<settings> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: ListTile(
                     title: Text(
                       "Twitter",

@@ -15,7 +15,7 @@ import '../bloc/task_event.dart';
 import '../bloc/task_state.dart';
 
 class CreateTaskPage extends StatefulWidget {
-  final Tasks? task; // Optional task parameter for editing
+  final Tasks? task;
   final bool isEditMode;
  
 
@@ -40,14 +40,14 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       : menuRepository = MenuRepository(userRepository: UserRepository());
   String selectedTaskType = 'Default';
   bool _isDateSelected = false;
-  bool _isEditMode = false; // To check if it's an edit operation
+  bool _isEditMode = false;
   @override
   void initState() {
     super.initState();
     if (widget.task != null) {
       _isEditMode = true;
       isFinished = widget.task!.isFinished;
-      _populateFields(widget.task!); // Populate fields with task data
+      _populateFields(widget.task!); 
     }
     _fetchMenus();
   }
@@ -57,7 +57,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     _dateController.text = task.date;
     _timeController.text = task.time;
     selectedTaskType =
-        task.menuId.toString(); // or assign the menu name if available
+        task.menuId.toString(); 
     _isDateSelected = true;
   }
 
@@ -81,14 +81,14 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     return Scaffold(
       backgroundColor: Color.fromARGB(134, 4, 83, 147),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(135, 33, 149, 243),
+        backgroundColor: const Color.fromARGB(135, 33, 149, 243),
         title: Text(_isEditMode ? 'Edit Task' : 'New Task',
-            style: TextStyle(color: Colors.white)),
+            style: const TextStyle(color: Colors.white)),
       ),
       body: BlocListener<TaskBloc, TaskState>(
         listener: (context, state) {
           if (state is TaskLoading) {
-            Center(
+            const Center(
               child: CircularProgressIndicator(color: Colors.white),
             );
           } else if (state is TaskSuccess || state is TaskUpdatedSuccess) {
@@ -110,7 +110,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
             child: ListView(
               children: [
                 SizedBox(height: 16),
-                Text(
+                const Text(
                   "What is to be done?",
                   style: TextStyle(
                     color: Color.fromARGB(135, 33, 149, 243),
@@ -119,12 +119,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   ),
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 TextField(
                   controller: _taskController,
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
                     hintText: "Enter Task here",
                     hintStyle: TextStyle(color: Colors.white),
                     enabledBorder: UnderlineInputBorder(
@@ -142,7 +142,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                         onChanged: (bool? value) {
                           if (value != null) {
                            setState(() {
-              isFinished = value; // Update the local state
+              isFinished = value; 
             });if(value){
                context.read<TaskBloc>().add(
                     MarkTaskAsCompleted(taskId: widget.task!.id),
@@ -153,7 +153,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                         activeColor: Colors.blue.shade900,
                         checkColor: Colors.white,
                       ),
-                      Text(
+                      const Text(
                         "Task Finished?",
                         style: TextStyle(
                           color: Colors.white,
@@ -164,12 +164,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     ],
                   ),
 
-                SizedBox(
+                const SizedBox(
                   height: 9,
                 ),
 
-                // Date Input
-                Text(
+               
+                const Text(
                   "Due Date",
                   style: TextStyle(
                     color: Color.fromARGB(135, 33, 149, 243),
@@ -177,10 +177,10 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     fontSize: 15,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _dateController,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   readOnly: true,
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
@@ -209,7 +209,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       });
                     }
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Date not set",
                     hintStyle: TextStyle(color: Colors.white),
                     suffixIcon: Icon(Icons.calendar_today, color: Colors.white),
@@ -221,12 +221,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   ),
                 ),
 
-                // Time Input (enabled only if date is selected)
+               
                 if (_isDateSelected) ...[
-                  SizedBox(
+                  const SizedBox(
                     height: 9,
                   ),
-                  Text(
+                  const Text(
                     "Time",
                     style: TextStyle(
                       color: Color.fromARGB(135, 33, 149, 243),
@@ -234,12 +234,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       fontSize: 15,
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: _timeController,
                     style: TextStyle(color: Colors.white),
                     readOnly: true,
-                    enabled: _isDateSelected, // Enable only if date is selected
+                    enabled: _isDateSelected, 
                     onTap: _isDateSelected
                         ? () async {
                             TimeOfDay? pickedTime = await showTimePicker(
@@ -268,19 +268,19 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       hintText: "Time not set",
                       hintStyle: TextStyle(color: Colors.white),
                       suffixIcon: Icon(Icons.access_time, color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
+                      enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white),
                       ),
                     ),
                   ),
                 ],
-                SizedBox(
+                const SizedBox(
                   height: 9,
                 ),
 
-                Text(
+                const Text(
                   "Add to List",
                   style: TextStyle(
                     color: Color.fromARGB(135, 33, 149, 243),
@@ -288,7 +288,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     fontSize: 15,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Row(
@@ -297,7 +297,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       child: BlocBuilder<MenuBloc, MenuState>(
                         builder: (context, state) {
                           if (state is MenuLoading) {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           } else if (state is MenuLoaded) {
                             return DropdownButtonFormField<Menus>(
                               dropdownColor: Color.fromARGB(135, 33, 149, 243),
@@ -316,7 +316,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                                       menu?.menuname ?? 'Default';
                                 });
                               },
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: "Select Menu",
                                 labelStyle: TextStyle(color: Colors.white),
                                 enabledBorder: UnderlineInputBorder(
@@ -330,7 +330,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                               iconEnabledColor: Colors.white,
                             );
                           } else if (state is MenuError) {
-                            return Text(
+                            return const Text(
                               'Error fetching menus',
                               style: TextStyle(color: Colors.white),
                             );
@@ -340,7 +340,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       ),
                     ),
                     IconButton(
-                        icon: Icon(Icons.format_list_bulleted_add,
+                        icon: const Icon(Icons.format_list_bulleted_add,
                             color: Colors.white),
                         onPressed: () {
                           _showNewMenuDialog();
@@ -365,7 +365,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                                 content: Text('Please fill in all fields')),
                           );
                         } else {
-                          // Different event for creating vs updating a task
+                          
                           if (_isEditMode && widget.task != null) {
                             context.read<TaskBloc>().add(
                                   UpdateTaskEvent(
@@ -446,7 +446,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                 final String menuName = menuController.text.trim();
                 final String date = dateController.text.trim();
                 if (menuName.isNotEmpty && date.isNotEmpty) {
-                  // Trigger the event to create a new menu
+                 
                   context
                       .read<MenuBloc>()
                       .add(CreateMenuEvent(menuname: menuName, date: date));
