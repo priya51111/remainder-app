@@ -23,33 +23,12 @@ class _settingsState extends State<settings> {
       backgroundColor: Color.fromARGB(134, 4, 83, 147),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(55), // Set your preferred height here
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 35,
-          ),
-          child: AppBar(
-            backgroundColor: Color.fromARGB(135, 33, 149, 243),
-            title: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 45,
-                  ),
-                  child: Text(
-                    "Settings",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                )
-              ],
+        child: AppBar(
+          backgroundColor: Color.fromARGB(135, 33, 149, 243),
+          title: Text(
+            "Settings",
+            style: TextStyle(
+              color: Colors.white,
             ),
           ),
         ),

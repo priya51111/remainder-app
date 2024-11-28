@@ -17,6 +17,8 @@ import '../bloc/task_state.dart';
 class CreateTaskPage extends StatefulWidget {
   final Tasks? task; // Optional task parameter for editing
   final bool isEditMode;
+ 
+
 
   const CreateTaskPage({Key? key, this.task, required this.isEditMode})
       : super(key: key);
@@ -29,7 +31,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   final TextEditingController _taskController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
-  bool _isTaskFinished = false;
+  bool isFinished = false;
 
   final UserRepository userRepository = UserRepository();
   final MenuRepository menuRepository;
@@ -44,6 +46,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     super.initState();
     if (widget.task != null) {
       _isEditMode = true;
+      isFinished = widget.task!.isFinished;
       _populateFields(widget.task!); // Populate fields with task data
     }
     _fetchMenus();
@@ -135,12 +138,16 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   Row(
                     children: [
                       Checkbox(
-                        value: widget.task!.isFinished,
+                        value: isFinished,
                         onChanged: (bool? value) {
-                          if (value != null && !widget.task!.isFinished) {
-                            context.read<TaskBloc>().add(
-                                  MarkTaskAsCompleted(taskId: widget.task!.id),
-                                );
+                          if (value != null) {
+                           setState(() {
+              isFinished = value; // Update the local state
+            });if(value){
+               context.read<TaskBloc>().add(
+                    MarkTaskAsCompleted(taskId: widget.task!.id),
+                  );
+            }
                           }
                         },
                         activeColor: Colors.blue.shade900,

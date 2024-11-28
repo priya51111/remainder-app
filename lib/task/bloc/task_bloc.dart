@@ -145,6 +145,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
+        payload: taskName
+        
       );
 
       logger.i(

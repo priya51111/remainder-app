@@ -39,6 +39,11 @@ class UserRepository {
       // Store user ID in local storage using GetStorage
       box.write('userId', user.userId);
       logger.i("User ID saved: ${user.userId}");
+       // Store the userId and other relevant information in SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', user.userId); // Store user ID in SharedPreferences
+        await prefs.setString('email', email); // Optionally store email or other user info
+        logger.i("User information saved in SharedPreferences");
 
       return user;
     } else if (response.statusCode == 409) {  // 409 Conflict for existing user

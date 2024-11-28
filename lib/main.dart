@@ -7,7 +7,7 @@ import 'package:testing/loginpage.dart';
 import 'package:testing/logout/bloc/Logout_bloc.dart';
 import 'package:testing/logout/repository/Logout_repository.dart';
 import 'package:testing/menu/bloc/menu_bloc.dart';
-
+import 'package:testing/task/view/view.dart';
 import 'login/bloc/login_bloc.dart';
 import 'login/repository/repository.dart';
 import 'menu/repo/menu_repository.dart';
@@ -15,15 +15,18 @@ import 'menu/view.dart';
 import 'task/bloc/task_bloc.dart';
 import 'task/repository/task_repository.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await requestExactAlarmPermission();
   tz.initializeTimeZones();
+
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -33,7 +36,11 @@ void main() async {
 
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      // Handle notification actions if needed
+    },
   );
+
   runApp(const MyApp());
 }
 
@@ -46,7 +53,13 @@ Future<void> requestExactAlarmPermission() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // Method to check if user is logged in by checking token in SharedPreferences
+  Future<bool> isUserLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token'); // Retrieve the token
+    return token != null && token.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     final UserRepository userRepository = UserRepository();
@@ -60,6 +73,7 @@ class MyApp extends StatelessWidget {
     );
     final FlutterLocalNotificationsPlugin localNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -68,34 +82,55 @@ class MyApp extends StatelessWidget {
             localNotificationsPlugin: localNotificationsPlugin,
             userRepository: userRepository,
             menuRepository: MenuRepository(userRepository: userRepository),
-          ), // Initialize TaskBloc
+          ),
         ),
         BlocProvider(
-          create: (context) =>
-              UserBloc(userRepository: userRepository), // Initialize LoginBloc
+          create: (context) => UserBloc(userRepository: userRepository),
         ),
         BlocProvider(
           create: (context) => MenuBloc(
             menuRepository: MenuRepository(userRepository: UserRepository()),
-          ), // Initialize MenuBloc
+          ),
         ),
         BlocProvider(
           create: (context) => LogoutBloc(
             logoutRepository:
                 LogoutRepository(userRepository: UserRepository()),
-          ), // Initialize MenuBloc
+          ),
         ),
       ],
-      child: MaterialApp(
-          title: 'Task Manager',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: Loginpage(),
-          routes: {
-    '/login': (context) => Loginpage(),
-    // other routes
-  },),
+      child: FutureBuilder<bool>(
+        future: isUserLoggedIn(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // Show loading indicator while checking
+          } else if (snapshot.hasData && snapshot.data == true) {
+            return MaterialApp(
+              title: 'Task Manager',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+              ),
+              navigatorKey: navigatorKey,
+              home:  SimplePage(), // Replace with your home page
+              routes: {
+                '/home': (context) =>  SimplePage(),
+              },
+            );
+          } else {
+            return MaterialApp(
+              title: 'Task Manager',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+              ),
+              navigatorKey: navigatorKey,
+              home: const Loginpage(), // Show login page if not logged in
+              routes: {
+                '/login': (context) => const Loginpage(),
+              },
+            );
+          }
+        },
+      ),
     );
   }
 }
