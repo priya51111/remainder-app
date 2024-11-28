@@ -30,7 +30,7 @@ class TaskCreated extends TaskState {
 
 class TaskSuccess extends TaskState {
   final List<Tasks> taskList;
-  final Map<String, String> menuMap; // Map menuId to menuName
+  final Map<String, String> menuMap;
 
   TaskSuccess({required this.taskList, required this.menuMap});
 }

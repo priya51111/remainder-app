@@ -22,14 +22,13 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   String channelName = 'Task Reminders';
   String channelDescription = 'Notifications for upcoming tasks and reminders.';
   final GetStorage box = GetStorage();
-  List<Tasks> allTasks = []; // Store all fetched tasks
+  List<Tasks> allTasks = []; 
   final TaskRepository taskRepository;
   final FlutterLocalNotificationsPlugin localNotificationsPlugin;
   final Logger logger = Logger();
   final UserRepository userRepository;
-  final MenuRepository menuRepository; // Add UserRepository here
-  List<Tasks> finishedTasks = []; // Declare finishedTasks here
-
+  final MenuRepository menuRepository; 
+  List<Tasks> finishedTasks = []; 
   TaskBloc({
     required this.taskRepository,
     required this.localNotificationsPlugin,
@@ -73,14 +72,14 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<void> _onFetchTask(
       FetchTaskEvent event, Emitter<TaskState> emit) async {
-    emit(TaskLoading()); // Emit loading state
+    emit(TaskLoading()); 
 
     try {
       final List<Tasks> tasks = await taskRepository.fetchTasks(
           userId: event.userId, date: event.date);
-      allTasks = tasks; // Store fetched tasks in allTasks
+      allTasks = tasks; 
       emit(TaskSuccess(
-          taskList: tasks, menuMap: {})); // Emit loaded state with menu list
+          taskList: tasks, menuMap: {})); 
     } catch (e) {
       logger.e("Error fetching tasks: $e");
       emit(TaskFailure(message: 'Failed to fetch tasks.'));
@@ -100,19 +99,17 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     String time,
   ) async {
     try {
-      // Correct the format to 'dd-MM-yyyy hh:mm a' for your date and time
       final DateTime scheduledDateTime =
           DateFormat('dd-MM-yyyy hh:mm a').parse('$date $time');
       final tz.TZDateTime scheduledTZDateTime =
           tz.TZDateTime.from(scheduledDateTime, tz.local);
       if (scheduledDateTime.isBefore(DateTime.now())) {
         logger.e('Cannot schedule notification in the past.');
-        return; // Early return if the scheduled time is in the past
+        return; 
       }
 
       logger.i('Scheduled date: ${scheduledDateTime.toIso8601String()}');
 
-      // Configure the notification details
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
         'task_reminders',
@@ -164,7 +161,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       add(FetchTaskEvent(
         userId: taskRepository.userRepository.getUserId()!,
         date: taskRepository.date(),
-      )); // Refresh task list
+      )); 
     } catch (e) {
       emit(TaskDeleteFailure(e.toString()));
     }
@@ -174,7 +171,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       UpdateTaskEvent event, Emitter<TaskState> emit) async {
     emit(TaskEditLoading());
     try {
-      // Await the updateTask call to get the success status
+      
       final isUpdated = await taskRepository.updateTask(
           taskId: event.taskId,
           task: event.task,
@@ -184,7 +181,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
           isFinished: event.isfinished);
       print('Task update status: $isUpdated, isFinished: ${event.isfinished}');
       if (isUpdated) {
-        // Fetch updated tasks list if update was successful
+        
         final updatedTasks = await taskRepository.fetchTasks(
           userId: userRepository.getUserId()!,
           date: box.read('date') ?? '',
@@ -192,7 +189,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
         emit(TaskUpdatedSuccess(sucess: updatedTasks));
       } else {
-        // Emit a failure state if the update was not successful
+        
         emit(TaskFailure(message: 'Failed to update the task'));
       }
     } catch (e) {
@@ -204,10 +201,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       MarkTaskAsCompleted event, Emitter<TaskState> emit) async {
     emit(TaskLoading());
     try {
-      // Call the task repository to mark the task as completed
       await taskRepository.completedTask(event.taskId);
 
-      // Fetch the updated list of tasks after marking one as completed
       final userId = taskRepository.userRepository.getUserId();
       final date = taskRepository.date();
       if (userId != null) {

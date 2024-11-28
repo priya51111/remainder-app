@@ -22,7 +22,7 @@ class _settingsState extends State<settings> {
     return Scaffold(
       backgroundColor: Color.fromARGB(134, 4, 83, 147),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(55), // Set your preferred height here
+        preferredSize: Size.fromHeight(55), 
         child: AppBar(
           backgroundColor: Color.fromARGB(135, 33, 149, 243),
           title: Text(

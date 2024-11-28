@@ -13,10 +13,10 @@ class MenuLoaded extends MenuState {
   MenuLoaded({required this.menuList});
 }
 class MenuCreated extends MenuState {
-  final String menuId; // Required
-  final String menuname; // Optional
+  final String menuId; 
+  final String menuname; 
 
-  MenuCreated({required this.menuId,  required this.menuname}); // menuname is optional
+  MenuCreated({required this.menuId,  required this.menuname}); 
 
   
 }

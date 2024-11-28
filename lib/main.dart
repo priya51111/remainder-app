@@ -37,7 +37,6 @@ void main() async {
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse: (NotificationResponse response) {
-      // Handle notification actions if needed
     },
   );
 
@@ -53,10 +52,9 @@ Future<void> requestExactAlarmPermission() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // Method to check if user is logged in by checking token in SharedPreferences
   Future<bool> isUserLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token'); // Retrieve the token
+    final token = prefs.getString('token'); 
     return token != null && token.isNotEmpty;
   }
 
@@ -103,7 +101,7 @@ class MyApp extends StatelessWidget {
         future: isUserLoggedIn(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // Show loading indicator while checking
+            return const CircularProgressIndicator();
           } else if (snapshot.hasData && snapshot.data == true) {
             return MaterialApp(
               title: 'Task Manager',
@@ -111,7 +109,7 @@ class MyApp extends StatelessWidget {
                 primarySwatch: Colors.blue,
               ),
               navigatorKey: navigatorKey,
-              home:  SimplePage(), // Replace with your home page
+              home:  SimplePage(), 
               routes: {
                 '/home': (context) =>  SimplePage(),
               },
@@ -123,7 +121,7 @@ class MyApp extends StatelessWidget {
                 primarySwatch: Colors.blue,
               ),
               navigatorKey: navigatorKey,
-              home: const Loginpage(), // Show login page if not logged in
+              home: const Loginpage(), 
               routes: {
                 '/login': (context) => const Loginpage(),
               },

@@ -14,12 +14,11 @@ class LogoutPage extends StatefulWidget {
 class _LogoutPageState extends State<LogoutPage> {
   late UserRepository userRepository;
   late String userId;
-  final String token = 'YOUR_BEARER_TOKEN'; // Add your token here
+  final String token = 'YOUR_BEARER_TOKEN'; 
 
   @override
   void initState() {
     super.initState();
-    // Initialize the UserRepository and load the user ID
     userRepository = UserRepository();
     userId = userRepository.getUserId();
   }
@@ -58,7 +57,6 @@ class _LogoutPageState extends State<LogoutPage> {
     );
   }
 
-  // This function shows the confirmation dialog
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -70,17 +68,16 @@ class _LogoutPageState extends State<LogoutPage> {
             TextButton(
               child: Text('No'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog without logging out
+                Navigator.of(context).pop(); 
               },
             ),
             TextButton(
               child: Text('Yes'),
               onPressed: () {
-                // Trigger the logout event
                 context.read<LogoutBloc>().add(
                   LogoutRequested(userId: userId),
                 );
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop(); 
               },
             ),
           ],

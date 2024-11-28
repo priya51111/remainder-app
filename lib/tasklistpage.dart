@@ -26,14 +26,14 @@ class _TasklistpageState extends State<Tasklistpage> {
   @override
   void initState() {
     super.initState();
-    userRepository = UserRepository(); // Initialize the user repository
+    userRepository = UserRepository(); 
     menuRepository = MenuRepository(
         userRepository:
-            userRepository); // Pass user repository to menu repository
+            userRepository); 
     taskRepository = TaskRepository(
       userRepository: userRepository,
       menuRepository: menuRepository,
-    ); // Pass both repositories to task repositoryn
+    );
 
     _fetchTasks();
   }
@@ -93,7 +93,7 @@ class _TasklistpageState extends State<Tasklistpage> {
                   );
                 });
 
-                return SizedBox.shrink(); // To prevent multiple SnackBars
+                return SizedBox.shrink();
               } else if (state is TaskDeleteFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Failed to delete task')),
@@ -105,7 +105,7 @@ class _TasklistpageState extends State<Tasklistpage> {
                   itemBuilder: (context, index) {
                     final task = state.taskList[index];
                     final menuname = state.menuMap[task.menuId] ??
-                        'Unknown menu'; // Fetch the menu name
+                        'Unknown menu'; 
                     return Padding(
                       padding: const EdgeInsets.all(9),
                       child: Container(
@@ -125,12 +125,12 @@ class _TasklistpageState extends State<Tasklistpage> {
                                     task.task,
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                ), // Display task name
+                                ), 
                                 SizedBox(width: 10),
                                 Text(
                                   '${task.date} ${task.time}',
                                   style: TextStyle(color:Color.fromARGB(135, 33, 149, 243), ),
-                                ), // Display date and time
+                                ),
                                 
                                 SizedBox(width: 10),
                                 Padding(
@@ -139,7 +139,7 @@ class _TasklistpageState extends State<Tasklistpage> {
                                     menuname,
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                ), // Di
+                                ), 
                               ],
                             ),
                             Column(

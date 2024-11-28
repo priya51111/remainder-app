@@ -7,7 +7,7 @@ import '../../login/repository/repository.dart';
 import '../models.dart';
 
 class TaskRepository {
-  final GetStorage box = GetStorage(); // Initialize GetStorage instance
+  final GetStorage box = GetStorage(); 
   final UserRepository userRepository;
   final MenuRepository menuRepository;
   final Logger logger = Logger();
@@ -28,7 +28,6 @@ class TaskRepository {
 
     logger.i('User ID: $userId, Menu ID: $menuId, Token: $token');
 
-    // Log the values to ensure they're not null
     logger.i('Task: $task, Date: $date, Time: $time');
 
     try {
@@ -52,24 +51,21 @@ class TaskRepository {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
-        // Check if data and task are present in the response
         if (responseData['data'] != null &&
             responseData['data']['task'] != null) {
-          // Access the task data
           final taskData = responseData['data']['task'];
-          final taskId = taskData['_id']; // Extract taskId from response
-
-          // Save taskId and other information in GetStorage
+          final taskId = taskData['_id'];
+          
           box.write('taskId', taskId);
           logger.i('Saved taskId: $taskId');
           box.write('date', date);
           logger.i('Saved: $date');
 
-          // Create a Tasks object from the response data
+         
           final createdTask = Tasks.fromJson(
-              taskData); // Ensure you have a fromJson method in your Tasks model
+              taskData); 
 
-          return createdTask; // Return the created task
+          return createdTask;
         } else {
           throw Exception('Invalid API response: Task data is missing');
         }
@@ -78,30 +74,28 @@ class TaskRepository {
       }
     } catch (error) {
       logger.e('Error creating task: $error');
-      // Always throw an exception on error
+      
       throw Exception('Error creating task: $error');
     }
   }
 
   String date() {
-    return box.read('date') ?? ''; // Return empty string if null
+    return box.read('date') ?? ''; 
   }
 
   Future<List<Tasks>> fetchTasks(
       {required String userId, required String date}) async {
     try {
-      // Fetch userId and date from UserRepository and GetStorage, respectively
       final userId = userRepository.getUserId();
-      final dates = box.read('date') ?? ''; // Ensure date is fetched correctly
-
-      // Log the fetched userId and date
+      final dates = box.read('date') ?? ''; 
+      
       logger.i('Fetched User ID: $userId, Fetched Date: $dates');
 
       if (userId == null || dates.isEmpty) {
         logger.e('User ID or Date is missing');
         throw Exception('User ID or Date is missing');
       }
-      final date = dates.replaceAll('/', '-'); // Change / to -
+      final date = dates.replaceAll('/', '-'); 
 
       final token = await userRepository.getToken();
       logger.i('User ID: $userId, Date: $dates, Token: $token');
@@ -115,16 +109,13 @@ class TaskRepository {
           },
         );
 
-        // Log the API response status and body
         logger.i('API Response Status Code: ${response.statusCode}');
         logger.i('API Response Body: ${response.body}');
 
         if (response.statusCode == 200) {
           final jsonData = jsonDecode(response.body);
 
-          // Check if data and task are present in the response
           if (jsonData['data'] != null && jsonData['data']['task'] != null) {
-            // Parse tasks from the response
             final tasks = (jsonData['data']['task'] as List)
                 .map((task) => Tasks.fromJson(task))
                 .toList();
@@ -156,7 +147,7 @@ class TaskRepository {
   
     logger.i('token:$token,');
     logger.i(
-        'Attempting to delete task with ID: $taskId'); // Assume token is stored here for authorization
+        'Attempting to delete task with ID: $taskId'); 
     final url =
         Uri.parse('https://app-project-9.onrender.com/api/task/delete/$taskId');
 
@@ -166,7 +157,7 @@ class TaskRepository {
         'Authorization': 'Bearer $token',
       },
     );
-    // Log the API response status and body
+    
     logger.i('API Response Status Code: ${response.statusCode}');
     logger.i('API Response Body: ${response.body}');
     if (response.statusCode != 200) {
@@ -187,7 +178,7 @@ class TaskRepository {
     final taskId = box.read('taskId');
     logger.i('token:$token,taskId:$taskId');
     logger.i(
-        'Attempting to updating  with ID: $taskId'); // Assume token is stored here for authorization
+        'Attempting to updating  with ID: $taskId'); 
     final url = Uri.parse(
         'https://app-project-9.onrender.com/api/task/updatetask/$taskId');
 
@@ -206,7 +197,6 @@ class TaskRepository {
           'finished':isFinished,
         }),
       );
-      // Log the API response status and body
       logger.i('API Response Status Code: ${response.statusCode}');
       logger.i('API Response Body: ${response.body}');
       return response.statusCode == 200;
@@ -222,7 +212,7 @@ class TaskRepository {
     final taskId = box.read('taskId');
     logger.i('token:$token,taskId:$taskId');
     logger.i(
-        'Attempting to updating  with ID: $taskId'); // Assume token is stored here for authorization
+        'Attempting to updating  with ID: $taskId');
          final urls = Uri.parse(
         'https://app-project-9.onrender.com/api/task/completeTask/$taskId');
          final response = await http.patch(

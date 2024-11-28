@@ -12,7 +12,7 @@ class LogoutRepository {
 
   Future<void> deleteUser(String userId) async {
     userId = userRepository.getUserId();
-    logger.i("UserId: $userId"); // Log userId to confirm its value
+    logger.i("UserId: $userId"); 
     final url = Uri.parse('$apiUrl/api/deleteUser/$userId');
     final token = await userRepository.getToken();
 
@@ -28,7 +28,6 @@ class LogoutRepository {
       },
     );
 
-    // Log the API response status and body
     logger.i('API Response Status Code: ${response.statusCode}');
     logger.i('API Response Body: ${response.body}');
 

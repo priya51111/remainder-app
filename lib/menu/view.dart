@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:testing/addBatchMode.dart';
+import 'package:testing/logout/LogoutPage.dart';
 import 'package:testing/settings.dart';
 import 'package:testing/task/bloc/task_event.dart';
 import 'package:testing/task/models.dart';
@@ -24,7 +25,8 @@ enum Menu {
   SendFeedback,
   FollowUs,
   Invite,
-  Settings
+  Settings,
+  Logout
 }
 
 class SimplePage extends StatefulWidget {
@@ -141,11 +143,9 @@ class _SimplePageState extends State<SimplePage> {
                     }
                   },
                   dropdownColor: Color.fromARGB(135, 33, 149, 243),
-                  iconEnabledColor: Colors.white, // Change icon color to white
-
-                  isExpanded:
-                      true, // Makes the dropdown take up the full width available
-                  underline: SizedBox(), // Removes the underline
+                  iconEnabledColor: Colors.white,
+                  isExpanded: true,
+                  underline: SizedBox(),
                 ),
               ),
             ),
@@ -301,7 +301,7 @@ class _SimplePageState extends State<SimplePage> {
                                 ),
                                 SizedBox(width: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 85   ),
+                                  padding: const EdgeInsets.only(right: 85),
                                   child: Text(
                                     task.time,
                                     style: TextStyle(color: Colors.white),
@@ -367,18 +367,17 @@ class _SimplePageState extends State<SimplePage> {
           case Menu.RemoveAds:
             break;
           case Menu.MoreApps:
-          // TODO: Handle this case.
           case Menu.SendFeedback:
-          // TODO: Handle this case.
           case Menu.FollowUs:
-          // TODO: Handle this case.
           case Menu.Invite:
-          // TODO: Handle this case.
-          case Menu.Settings:
+          case Menu.Logout:
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => LogoutPage()));
+            break;
+             case Menu.Settings:
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => settings()));
-
-          // TODO: Handle this case.
+            break;
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
@@ -415,6 +414,11 @@ class _SimplePageState extends State<SimplePage> {
         const PopupMenuItem<Menu>(
           value: Menu.Settings,
           child: Text('Settings',
+              style: TextStyle(color: Colors.white, fontSize: 17)),
+        ),
+        const PopupMenuItem<Menu>(
+          value: Menu.Settings,
+          child: Text('Logout',
               style: TextStyle(color: Colors.white, fontSize: 17)),
         ),
       ],
@@ -469,7 +473,6 @@ class _SimplePageState extends State<SimplePage> {
                 final String menuName = menuController.text.trim();
                 final String date = dateController.text.trim();
                 if (menuName.isNotEmpty && date.isNotEmpty) {
-                  // Trigger the event to create a new menu
                   context
                       .read<MenuBloc>()
                       .add(CreateMenuEvent(menuname: menuName, date: date));

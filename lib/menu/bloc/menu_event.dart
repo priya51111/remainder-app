@@ -1,6 +1,5 @@
 abstract class MenuEvent {}
 
-// Event to create a menu
 class CreateMenuEvent extends MenuEvent {
   final String menuname;
   final String date;

@@ -2,42 +2,36 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../login/repository/repository.dart'; // Import the UserRepository
+import '../../login/repository/repository.dart';
 import '../bloc/menu_state.dart';
-import '../model.dart'; // Import Menus model
+import '../model.dart';
 
 class MenuRepository {
   final String createMenuUrl =
       'https://app-project-9.onrender.com/api/menu/menu';
-  final GetStorage box = GetStorage(); // Initialize GetStorage instance
-  final UserRepository userRepository; // Add UserRepository as a dependency
+  final GetStorage box = GetStorage();
+  final UserRepository userRepository;
   final Logger logger = Logger();
   final String fetchMenusUrl =
       'https://app-project-9.onrender.com/api/menu/getbyid';
-  // Constructor with UserRepository as a parameter
   MenuRepository({required this.userRepository});
 
-  // Method to create a menu
   Future<String> createMenu(String menuname, String date) async {
-    // Fetch userId from UserRepository
     final userId = userRepository.getUserId();
 
-    // Log the userId to check if it's being retrieved properly
     logger.i("UserId: $userId");
 
-    // Handle the case where userId is missing
     if (userId == null) {
       throw Exception('User ID is missing');
     }
 
-    // Fetch the token from UserRepository
-    final token = await userRepository.getToken(); // Use the public method now
+    final token = await userRepository.getToken(); 
     if (token == null) {
       throw Exception('Token is missing');
     }
 
     try {
-      // Make the API call to create a menu
+     
       final response = await http.post(
         Uri.parse(createMenuUrl),
         headers: {
@@ -51,23 +45,19 @@ class MenuRepository {
         }),
       );
 
-      // Log the API response for debugging
       logger.i("API Response: ${response.statusCode} - ${response.body}");
 
-      // Handle the response
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         final menuId = data['data']['menu']['_id'];
         final date = data['data']['menu']['date'];
 
-        // Save the date in GetStorage
         box.write('date', date);
         logger.i('Date Saved: $date');
 
-        // Save the menuId in local storage
         box.write('menuId', menuId);
         logger.i("Menu ID saved: $menuId");
-        return menuId; // Return the menuId
+        return menuId;
       } else {
         throw Exception("Error: ${response.body}");
       }
@@ -77,21 +67,17 @@ class MenuRepository {
     }
   }
 
-  // Method to retrieve the saved menuId from GetStorage
   String getSavedMenuId() {
-    return box.read('menuId') ?? ''; // Return empty string if null
+    return box.read('menuId') ?? ''; 
   }
 
-  // Method to retrieve the saved date from GetStorage
   String getdate() {
-    return box.read('date') ?? ''; // Return empty string if null
+    return box.read('date') ?? ''; 
   }
     final List<String> defaultMenus = ["Wishlist", "Shopping", "Default","Personal","Work"];
-  // Method to fetch menus based on userId and date
   Future<List<Menus>> fetchMenus(
     {required String userId, required String providedDate}) async {
   try {
-    // Retrieve the userId
     final userId = userRepository.getUserId();
     logger.i("UserId: $userId");
 
@@ -99,7 +85,6 @@ class MenuRepository {
       throw Exception('User ID is missing');
     }
 
-    // Prioritize the providedDate. Use the saved date only if providedDate is empty
     final date = providedDate.isNotEmpty ? providedDate : box.read('date');
     logger.i("Using Date: $date");
 
@@ -107,13 +92,11 @@ class MenuRepository {
       throw Exception('Date is missing');
     }
 
-    // Fetch the token
     final token = await userRepository.getToken();
     if (token == null) {
       throw Exception('Token is missing');
     }
 
-    // Make the GET request to fetch menus
     final response = await http.get(
       Uri.parse('$fetchMenusUrl/$userId/$date'),
       headers: {
@@ -131,7 +114,6 @@ class MenuRepository {
             .map((menu) => Menus.fromJson(menu))
             .toList();
         
-        // Create default menus if needed
         await _createDefaultMenusIfNeeded(menus, userId, date);
         return menus;
       } else {
@@ -151,7 +133,6 @@ class MenuRepository {
      logger.i('Existing menu names: $existingMenuNames');
     for (var defaultMenu in defaultMenus) {
       if (!existingMenuNames.contains(defaultMenu)) {
-        // If the default menu is not present, create it
         await createMenu(defaultMenu, date);
         logger.i('Default menu "$defaultMenu" created');
       }

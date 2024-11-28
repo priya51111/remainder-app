@@ -23,14 +23,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     Emitter<UserState> emit,
   ) async {
     emit(UserLoading());
-    logger.i('Creating user: ${event.email}'); // Log email only for security
+    logger.i('Creating user: ${event.email}');
 
     try {
-      // Call repository to create user with email and password directly
       final createdUser =
           await userRepository.createUser(event.email, event.password);
 
-      // Emit the created user state
       emit(UserCreated(createdUser));
 
       logger.i('User created successfully: ${createdUser.userId}');
@@ -38,7 +36,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final authResponse =
           await userRepository.signIn(event.email, event.password);
 
-      // Emit successful authentication state with token
       emit(UserAuthenticated(authResponse.token));
       logger.i(
           "User authenticated successfully with token: ${authResponse.token}");
@@ -57,7 +54,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final authResponse =
           await userRepository.signIn(event.email, event.password);
 
-      // Emit successful authentication state with token
       emit(UserAuthenticated(authResponse.token));
       logger.i(
           "User authenticated successfully with token: ${authResponse.token}");
@@ -69,7 +65,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   Future<void> _onSignOutUser(
       SignOutUser event, Emitter<UserState> emit) async {
-    // Clear token, userId, and expiry date
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('userId');

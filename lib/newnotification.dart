@@ -47,7 +47,7 @@ class TaskDetailPage extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // You can add functionality to edit or delete the task here
+                
               },
               child: Text('Edit Task'),
             ),

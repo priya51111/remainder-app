@@ -16,7 +16,7 @@ import '../../menu/repo/menu_repository.dart';
 
 
 class Addbatchmode extends StatefulWidget {
-  final Tasks? task; // Optional task parameter for editing
+  final Tasks? task;
   final bool isEditMode;
 
   const Addbatchmode({Key? key, this.task, required this.isEditMode})
@@ -39,13 +39,13 @@ class _CreateTaskPageState extends State<Addbatchmode> {
       : menuRepository = MenuRepository(userRepository: UserRepository());
   String selectedTaskType = 'Default';
   bool _isDateSelected = false;
-  bool _isEditMode = false; // To check if it's an edit operation
+  bool _isEditMode = false; 
   @override
   void initState() {
     super.initState();
     if (widget.task != null) {
       _isEditMode = true;
-      _populateFields(widget.task!); // Populate fields with task data
+      _populateFields(widget.task!);
     }
     _fetchMenus();
   }
@@ -55,7 +55,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
     _dateController.text = task.date;
     _timeController.text = task.time;
     selectedTaskType =
-        task.menuId.toString(); // or assign the menu name if available
+        task.menuId.toString();
     _isDateSelected = true;
   }
 
@@ -162,7 +162,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                   height: 9,
                 ),
 
-                // Date Input
+                
                 Text(
                   "Due Date",
                   style: TextStyle(
@@ -215,7 +215,6 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                   ),
                 ),
 
-                // Time Input (enabled only if date is selected)
                 if (_isDateSelected) ...[
                   SizedBox(
                     height: 9,
@@ -233,7 +232,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                     controller: _timeController,
                     style: TextStyle(color: Colors.white),
                     readOnly: true,
-                    enabled: _isDateSelected, // Enable only if date is selected
+                    enabled: _isDateSelected,
                     onTap: _isDateSelected
                         ? () async {
                             TimeOfDay? pickedTime = await showTimePicker(
@@ -359,7 +358,6 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                                 content: Text('Please fill in all fields')),
                           );
                         } else {
-                          // Different event for creating vs updating a task
                           if (_isEditMode && widget.task != null) {
                             context.read<TaskBloc>().add(
                                   UpdateTaskEvent(
@@ -440,7 +438,6 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                 final String menuName = menuController.text.trim();
                 final String date = dateController.text.trim();
                 if (menuName.isNotEmpty && date.isNotEmpty) {
-                  // Trigger the event to create a new menu
                   context
                       .read<MenuBloc>()
                       .add(CreateMenuEvent(menuname: menuName, date: date));

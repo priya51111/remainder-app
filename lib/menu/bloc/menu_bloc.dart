@@ -9,15 +9,14 @@ import 'menu_state.dart';
 
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
   final MenuRepository menuRepository;
-  final GetStorage box = GetStorage(); // Initialize GetStorage instance
+  final GetStorage box = GetStorage();
   final Logger logger = Logger();
 
   MenuBloc({required this.menuRepository}) : super(MenuInitial()) {
     on<CreateMenuEvent>(_onCreateMenu);
-    on<FetchMenusEvent>(_onFetchMenus); // Add the fetch event handler
+    on<FetchMenusEvent>(_onFetchMenus); 
   }
 
-  // Handle creating a new menu
   Future<void> _onCreateMenu(CreateMenuEvent event, Emitter<MenuState> emit) async {
     emit(MenuLoading());
     try {
@@ -32,24 +31,22 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         return;
       }
 
-      // Fetch menus after creating a menu
       add(FetchMenusEvent(userId: userId, date: date));
     } catch (error) {
       emit(MenuError(message: error.toString()));
     }
   }
 
-  // Handle fetching menus
  Future<void> _onFetchMenus(FetchMenusEvent event, Emitter<MenuState> emit) async {
-  emit(MenuLoading()); // Emit loading state
+  emit(MenuLoading()); 
 
   try {
     final List<Menus> menus = await menuRepository.fetchMenus(
-      userId: event.userId, // Ensure userId is passed here
+      userId: event.userId, 
       providedDate: event.date,
     );
 
-    emit(MenuLoaded(menuList: menus)); // Emit loaded state with menu list
+    emit(MenuLoaded(menuList: menus));
   } catch (e) {
     logger.e("Error fetching menus: $e");
     emit(MenuError(message: 'Failed to fetch menus.'));
