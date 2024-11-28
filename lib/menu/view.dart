@@ -145,11 +145,11 @@ class _SimplePageState extends State<SimplePage> {
                     }
                   },
                   dropdownColor: Color.fromARGB(135, 33, 149, 243),
-                  iconEnabledColor: Colors.white, // Change icon color to white
+                  iconEnabledColor: Colors.white, 
 
                   isExpanded:
-                      true, // Makes the dropdown take up the full width available
-                  underline: SizedBox(), // Removes the underline
+                      true, 
+                  underline: SizedBox(), 
                 ),
               ),
             ),
@@ -398,7 +398,7 @@ class _SimplePageState extends State<SimplePage> {
                        
                         )));
 
-          // TODO: Handle this case.
+          
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
@@ -499,7 +499,7 @@ class _SimplePageState extends State<SimplePage> {
                 final String menuName = menuController.text.trim();
                 final String date = dateController.text.trim();
                 if (menuName.isNotEmpty && date.isNotEmpty) {
-                  // Trigger the event to create a new menu
+                 
                   context
                       .read<MenuBloc>()
                       .add(CreateMenuEvent(menuname: menuName, date: date));

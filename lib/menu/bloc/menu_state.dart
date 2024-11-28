@@ -17,7 +17,7 @@ class MenuCreated extends MenuState {
   final String menuname;
 
   MenuCreated(
-      {required this.menuId, required this.menuname}); // menuname is optional
+      {required this.menuId, required this.menuname}); 
 }
 
 class MenuUpdateSuccess extends MenuState {

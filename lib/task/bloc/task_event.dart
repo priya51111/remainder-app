@@ -20,17 +20,17 @@ class FetchTaskEvent extends TaskEvent {
   final String userId;
   final String date;
   
-  final bool? finished; // Add this line
+  final bool? finished;
 
   FetchTaskEvent({
     required this.userId,
     required this.date,
    
-    this.finished, // Add this line
+    this.finished, 
   });
 
   @override
-  List<Object> get props => [userId, date]; // Include finished in props
+  List<Object> get props => [userId, date]; 
 }
 
 
@@ -56,12 +56,12 @@ class UpdateTaskEvent extends TaskEvent{
   });
 }
 class MarkTaskAsCompleted extends TaskEvent {
-  final String taskId; // The task ID to update
+  final String taskId; 
 
   MarkTaskAsCompleted({required this.taskId});
 }
 
-// task_event.dart
+
 
 
 

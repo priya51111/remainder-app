@@ -101,7 +101,7 @@ class TaskRepository {
         logger.e('User ID or Date is missing');
         throw Exception('User ID or Date is missing');
       }
-      final date = dates.replaceAll('/', '-'); // Change / to -
+      final date = dates.replaceAll('/', '-'); 
 
       final token = await userRepository.getToken();
       logger.i('User ID: $userId, Date: $dates, Token: $token');
@@ -115,16 +115,16 @@ class TaskRepository {
           },
         );
 
-        // Log the API response status and body
+
         logger.i('API Response Status Code: ${response.statusCode}');
         logger.i('API Response Body: ${response.body}');
 
         if (response.statusCode == 200) {
           final jsonData = jsonDecode(response.body);
 
-          // Check if data and task are present in the response
+        
           if (jsonData['data'] != null && jsonData['data']['task'] != null) {
-            // Parse tasks from the response
+           
             final tasks = (jsonData['data']['task'] as List)
                 .map((task) => Tasks.fromJson(task))
                 .toList();
@@ -156,7 +156,7 @@ class TaskRepository {
   
     logger.i('token:$token,');
     logger.i(
-        'Attempting to delete task with ID: $taskId'); // Assume token is stored here for authorization
+        'Attempting to delete task with ID: $taskId'); 
     final url =
         Uri.parse('https://app-project-9.onrender.com/api/task/delete/$taskId');
 
@@ -166,7 +166,7 @@ class TaskRepository {
         'Authorization': 'Bearer $token',
       },
     );
-    // Log the API response status and body
+    
     logger.i('API Response Status Code: ${response.statusCode}');
     logger.i('API Response Body: ${response.body}');
     if (response.statusCode != 200) {
@@ -187,7 +187,7 @@ class TaskRepository {
     final taskId = box.read('taskId');
     logger.i('token:$token,taskId:$taskId');
     logger.i(
-        'Attempting to updating  with ID: $taskId'); // Assume token is stored here for authorization
+        'Attempting to updating  with ID: $taskId');
     final url = Uri.parse(
         'https://app-project-9.onrender.com/api/task/updatetask/$taskId');
 
@@ -206,7 +206,7 @@ class TaskRepository {
           'finished':isFinished,
         }),
       );
-      // Log the API response status and body
+     
       logger.i('API Response Status Code: ${response.statusCode}');
       logger.i('API Response Body: ${response.body}');
       return response.statusCode == 200;
@@ -222,7 +222,7 @@ class TaskRepository {
     final taskId = box.read('taskId');
     logger.i('token:$token,taskId:$taskId');
     logger.i(
-        'Attempting to updating  with ID: $taskId'); // Assume token is stored here for authorization
+        'Attempting to updating  with ID: $taskId'); 
          final urls = Uri.parse(
         'https://app-project-9.onrender.com/api/task/completeTask/$taskId');
          final response = await http.patch(
