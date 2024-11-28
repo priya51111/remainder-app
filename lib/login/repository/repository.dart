@@ -8,64 +8,60 @@ import '../model/models.dart';
 
 class UserRepository {
   final String apiUrl = 'https://app-project-9.onrender.com';
-  final box = GetStorage(); // Initialize GetStorage
+  final box = GetStorage(); 
   final Logger logger = Logger();
 
-  /// Create a new user and store userId locally using GetStorage
- Future<User> createUser(String email, String password) async {
-  if (email.isEmpty || password.isEmpty) {
-    throw Exception("Email and password are missing");
-  }
+ 
+  Future<User> createUser(String email, String password) async {
+    if (email.isEmpty || password.isEmpty) {
+      throw Exception("Email and password are missing");
+    }
 
-  try {
-    final response = await http.post(
-      Uri.parse('$apiUrl/api/user'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$apiUrl/api/user'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
 
-    // Log the response for debugging
-    logger.i("API Response: ${response.statusCode} - ${response.body}");
+    
+      logger.i("API Response: ${response.statusCode} - ${response.body}");
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      // Parse the response body to create a User instance
-      final responseBody = json.decode(response.body);
-      final userMap = responseBody['data']['user']; // Ensure this is a map
-      final user = User.fromJson(userMap); // Pass the entire map to fromJson
+      if (response.statusCode == 200 || response.statusCode == 201) {
+      
+        final responseBody = json.decode(response.body);
+        final userMap = responseBody['data']['user'];
+        final user = User.fromJson(userMap);
 
-      // Store user ID in local storage using GetStorage
-      box.write('userId', user.userId);
-      logger.i("User ID saved: ${user.userId}");
-       // Store the userId and other relevant information in SharedPreferences
+        box.write('userId', user.userId);
+        logger.i("User ID saved: ${user.userId}");
+
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userId', user.userId); // Store user ID in SharedPreferences
-        await prefs.setString('email', email); // Optionally store email or other user info
+        await prefs.setString('userId', user.userId);
+        await prefs.setString('email', email);
         logger.i("User information saved in SharedPreferences");
 
-      return user;
-    } else if (response.statusCode == 409) {  // 409 Conflict for existing user
-      throw Exception("User with this email already exists. Please sign in.");
-    }else {
-      throw Exception("Error: ${response.body}");
+        return user;
+      } else if (response.statusCode == 409) {
+        throw Exception("User with this email already exists. Please sign in.");
+      } else {
+        throw Exception("Error: ${response.body}");
+      }
+    } catch (e) {
+      logger.e("Error creating user: $e");
+      throw Exception('Failed to create user');
     }
-  } catch (e) {
-    logger.e("Error creating user: $e");
-    throw Exception('Failed to create user');
   }
-}
 
-
-  /// Method to retrieve stored user ID from GetStorage
   String getUserId() {
     final userId = box.read('userId');
     logger.i("Retrieved User ID: $userId");
     return userId;
   }
 
-  /// Sign in user and store token using SharedPreferences
   Future<AuthResponse> signIn(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception("Email and password cannot be empty");
@@ -80,7 +76,6 @@ class UserRepository {
       }),
     );
 
-    // Log the response for debugging
     logger.i("Response Status Code: ${response.statusCode}");
     logger.i("Response Body: ${response.body}");
 
@@ -92,7 +87,7 @@ class UserRepository {
         throw Exception('Invalid credentials: token or userId is missing');
       }
 
-      // Store the token in SharedPreferences
+    
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
       logger.i("Token saved: $token");
@@ -103,20 +98,17 @@ class UserRepository {
     }
   }
 
-  /// Retrieve stored token from SharedPreferences
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-  /// Sign out and remove token from SharedPreferences
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('tokenExpiry');
   }
 
-  // Storing and retrieving user data locally
   Future<void> saveUsersToLocal(List<User> users) async {
     final prefs = await SharedPreferences.getInstance();
     List<String> userList =
@@ -135,12 +127,10 @@ class UserRepository {
     return [];
   }
 
-  /// Generate a unique userId based on the current timestamp
   String generateUserId() {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  /// Check if the stored token has expired
   Future<bool> isTokenExpired() async {
     final prefs = await SharedPreferences.getInstance();
     final tokenExpiry = prefs.getString('tokenExpiry');

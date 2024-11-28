@@ -53,12 +53,7 @@ Future<void> requestExactAlarmPermission() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // Method to check if user is logged in by checking token in SharedPreferences
-  Future<bool> isUserLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token'); // Retrieve the token
-    return token != null && token.isNotEmpty;
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -100,25 +95,9 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ],
-      child: FutureBuilder<bool>(
-        future: isUserLoggedIn(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // Show loading indicator while checking
-          } else if (snapshot.hasData && snapshot.data == true) {
-            return MaterialApp(
-              title: 'Task Manager',
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-              ),
-              navigatorKey: navigatorKey,
-              home:  SimplePage(), // Replace with your home page
-              routes: {
-                '/home': (context) =>  SimplePage(),
-              },
-            );
-          } else {
-            return MaterialApp(
+      child:
+         
+             MaterialApp(
               title: 'Task Manager',
               theme: ThemeData(
                 primarySwatch: Colors.blue,
@@ -128,10 +107,9 @@ class MyApp extends StatelessWidget {
               routes: {
                 '/login': (context) => const Loginpage(),
               },
-            );
-          }
-        },
-      ),
+            )
+          
+        
     );
   }
 }
