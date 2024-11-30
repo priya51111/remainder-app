@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testing/login/repository/repository.dart';
 
 class LogoutRepository {
@@ -12,7 +13,7 @@ class LogoutRepository {
 
   Future<void> deleteUser(String userId) async {
     userId = userRepository.getUserId();
-    logger.i("UserId: $userId"); 
+    logger.i("UserId: $userId");
     final url = Uri.parse('$apiUrl/api/deleteUser/$userId');
     final token = await userRepository.getToken();
 
@@ -24,13 +25,17 @@ class LogoutRepository {
       url,
       headers: {
         'Authorization': 'Bearer $token',
-       'Content-Type':"application/json"
+        'Content-Type': "application/json"
       },
     );
 
-   
     logger.i('API Response Status Code: ${response.statusCode}');
     logger.i('API Response Body: ${response.body}');
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('userId');
+    logger.i('All user data cleared from storage');
 
     if (response.statusCode == 200) {
       print('User deleted successfully');

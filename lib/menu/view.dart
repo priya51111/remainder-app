@@ -376,9 +376,9 @@ class _SimplePageState extends State<SimplePage> {
           case Menu.SendFeedback:
          
           case Menu.FollowUs:
-          // TODO: Handle this case.
+        
           case Menu.Invite:
-          // TODO: Handle this case.
+        
           case Menu.Settings:
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => const settings()));

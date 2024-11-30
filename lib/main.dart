@@ -98,7 +98,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         navigatorKey: navigatorKey,
-        // Check if the user is logged in and navigate accordingly
         home: isUserLoggedIn ? SimplePage() :  Loginpage(),
         routes: {
           '/login': (context) =>  Loginpage(),
