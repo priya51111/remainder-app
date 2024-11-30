@@ -112,5 +112,7 @@ class UserRepository {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
+  static deleteUser() {}
+
 
 }
