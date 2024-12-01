@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:testing/main.dart';
 import 'package:testing/menu/repo/menu_repository.dart';
 import 'package:testing/task/models.dart';
 
@@ -27,8 +28,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final FlutterLocalNotificationsPlugin localNotificationsPlugin;
   final Logger logger = Logger();
   final UserRepository userRepository;
-  final MenuRepository menuRepository; 
-  List<Tasks> finishedTasks = []; 
+  final MenuRepository menuRepository;
+  List<Tasks> finishedTasks = [];
 
   TaskBloc({
     required this.taskRepository,
@@ -73,14 +74,13 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   Future<void> _onFetchTask(
       FetchTaskEvent event, Emitter<TaskState> emit) async {
-    emit(TaskLoading()); 
+    emit(TaskLoading());
 
     try {
       final List<Tasks> tasks = await taskRepository.fetchTasks(
           userId: event.userId, date: event.date);
-      allTasks = tasks; 
-      emit(TaskSuccess(
-          taskList: tasks, menuMap: {})); 
+      allTasks = tasks;
+      emit(TaskSuccess(taskList: tasks, menuMap: {}));
     } catch (e) {
       logger.e("Error fetching tasks: $e");
       emit(TaskFailure(message: 'Failed to fetch tasks.'));
@@ -100,37 +100,33 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     String time,
   ) async {
     try {
-     
       final DateTime scheduledDateTime =
           DateFormat('dd-MM-yyyy hh:mm a').parse('$date $time');
       final tz.TZDateTime scheduledTZDateTime =
           tz.TZDateTime.from(scheduledDateTime, tz.local);
       if (scheduledDateTime.isBefore(DateTime.now())) {
         logger.e('Cannot schedule notification in the past.');
-        return; 
+        return;
       }
 
       logger.i('Scheduled date: ${scheduledDateTime.toIso8601String()}');
 
-      
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-        'task_reminders',
-        'Task Reminders',
-        channelDescription: 'Notifications for upcoming tasks and reminders.',
-        importance: Importance.max,
-        priority: Priority.high,
-        actions: [
-          AndroidNotificationAction(
-            'edit_action',
-            'Edit',
-          ),
-          AndroidNotificationAction(
-            'finish_action',
-            'Finish',
-          ),
-        ],
-      );
+          AndroidNotificationDetails('task_reminders', 'Task Reminders',
+              channelDescription:
+                  'Notifications for upcoming tasks and reminders.',
+              importance: Importance.max,
+              priority: Priority.high,
+              actions: [
+            AndroidNotificationAction(
+              'finish_action',
+              'Finish',
+            ),
+            AndroidNotificationAction(
+              'edit_action',
+              'Edit',
+            ),
+          ]);
 
       const NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -145,8 +141,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
-        payload: taskName
-        
+        payload: jsonEncode({
+          'action': 'edit',
+          'taskName': taskName,
+          'date': date,
+          "time": time,
+        }),
       );
 
       logger.i(
@@ -164,7 +164,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       add(FetchTaskEvent(
         userId: taskRepository.userRepository.getUserId()!,
         date: taskRepository.date(),
-      )); 
+      ));
     } catch (e) {
       emit(TaskDeleteFailure(e.toString()));
     }
@@ -174,7 +174,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       UpdateTaskEvent event, Emitter<TaskState> emit) async {
     emit(TaskEditLoading());
     try {
-    
       final isUpdated = await taskRepository.updateTask(
           taskId: event.taskId,
           task: event.task,
@@ -184,15 +183,22 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
           isFinished: event.isfinished);
       print('Task update status: $isUpdated, isFinished: ${event.isfinished}');
       if (isUpdated) {
-        
         final updatedTasks = await taskRepository.fetchTasks(
           userId: userRepository.getUserId()!,
           date: box.read('date') ?? '',
         );
-
+        add(FetchTaskEvent(
+          userId: taskRepository.userRepository.getUserId()!,
+          date: taskRepository.date(),
+        ));
+        await _scheduleNotification(
+          localNotificationsPlugin,
+          event.task,
+          event.date,
+          event.time,
+        );
         emit(TaskUpdatedSuccess(sucess: updatedTasks));
       } else {
-        
         emit(TaskFailure(message: 'Failed to update the task'));
       }
     } catch (e) {
@@ -204,25 +210,40 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       MarkTaskAsCompleted event, Emitter<TaskState> emit) async {
     emit(TaskLoading());
     try {
-   
-      await taskRepository.completedTask(event.taskId);
+      // Calling the taskRepository method to update the task's completion status
+      final response = await taskRepository.completedTask(event.taskId);
 
-    
-      final userId = taskRepository.userRepository.getUserId();
-      final date = taskRepository.date();
-      if (userId != null) {
-        final updatedTasks =
-            await taskRepository.fetchTasks(userId: userId, date: date);
+      // Assuming the response is in JSON format, make sure it is parsed
+      final Map<String, dynamic> responseMap = response as Map<String, dynamic>;
 
-        emit(TaskUpdatedSuccess(sucess: updatedTasks));
+      // Check if the response contains the success message and emit accordingly
+      if (responseMap['status'] == 'success') {
+        // Emit the success state with the success message from the API response
+        emit(TaskMarkedAsCompleted(message: responseMap['message']));
       } else {
-        emit(TaskFailure(message: "User ID is missing."));
+        emit(TaskFailure(message: 'Failed to mark task as completed'));
       }
+
+      // Optionally, refresh the task list after marking the task as completed
+      add(FetchTaskEvent(
+        userId: taskRepository.userRepository.getUserId()!,
+        date: taskRepository.date(),
+      ));
     } catch (error) {
       emit(TaskFailure(message: error.toString()));
     }
   }
 
-  
+  Future<void> onNotificationActionSelected(
+      String action, String payload) async {
+    final data = jsonDecode(payload);
+    if (action == 'finish_action') {
+      final taskId = data['taskId'];
+      await taskRepository.completedTask(taskId);
+      add(FetchTaskEvent(
+        userId: taskRepository.userRepository.getUserId()!,
+        date: taskRepository.date(),
+      ));
+    }
+  }
 }
-    

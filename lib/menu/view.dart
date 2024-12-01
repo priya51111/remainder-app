@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testing/addBatchMode.dart';
 import 'package:testing/menulistpage.dart';
 import 'package:testing/settings.dart';
@@ -38,14 +40,18 @@ class SimplePage extends StatefulWidget {
 
 class _SimplePageState extends State<SimplePage> {
   String? dropdownValue;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   List<String> dropdownItems = ['New List', 'Finished '];
   late UserRepository userRepository;
   late MenuRepository menuRepository;
   late TaskRepository taskRepository;
-
+List<PendingNotificationRequest> _pendingNotifications = [];
+  List<String> _activeNotifications = [];
   @override
   void initState() {
     super.initState();
+   
     userRepository = UserRepository();
     menuRepository = MenuRepository(userRepository: userRepository);
     taskRepository = TaskRepository(
@@ -70,6 +76,8 @@ class _SimplePageState extends State<SimplePage> {
       );
     }
   }
+
+
 
   void _fetchTasks(bool? finished) {
     final userIds = userRepository.getUserId();
@@ -199,13 +207,14 @@ class _SimplePageState extends State<SimplePage> {
       body: BlocListener<TaskBloc, TaskState>(
         listener: (context, state) {
           if (state is TaskMarkedAsCompleted) {
+            
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
                 duration: const Duration(seconds: 3),
               ),
             );
-
+             
             _fetchTasks(true);
             _fetchTasks(false);
           } else if (state is TaskSuccess) {
@@ -241,7 +250,7 @@ class _SimplePageState extends State<SimplePage> {
                 itemCount: filteredTasks.length,
                 itemBuilder: (context, index) {
                   final task = filteredTasks[index];
-                  final menuname = state.menuMap[task.menuId] ?? 'Unknown menu';
+                 
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -271,9 +280,12 @@ class _SimplePageState extends State<SimplePage> {
                                   value: task.isFinished,
                                   onChanged: (bool? value) {
                                     if (value != null && !task.isFinished) {
+                                     
+
                                       context.read<TaskBloc>().add(
                                             MarkTaskAsCompleted(
-                                              taskId: task.id,
+                                              
+                                              taskId: task.taskId
                                             ),
                                           );
                                     }

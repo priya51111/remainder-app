@@ -145,7 +145,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
               isFinished = value; 
             });if(value){
                context.read<TaskBloc>().add(
-                    MarkTaskAsCompleted(taskId: widget.task!.id),
+                    MarkTaskAsCompleted(taskId: widget.task!.taskId),
                   );
             }
                           }
@@ -369,7 +369,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                           if (_isEditMode && widget.task != null) {
                             context.read<TaskBloc>().add(
                                   UpdateTaskEvent(
-                                      taskId: widget.task!.id,
+                                      taskId: widget.task!.taskId,
                                       task: task,
                                       date: date,
                                       time: time,
@@ -381,6 +381,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                                   task: task,
                                   date: date,
                                   time: time,
+                                 
                                 ));
                           }
                           Navigator.pop(context);

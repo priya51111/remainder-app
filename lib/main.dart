@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,6 +9,7 @@ import 'package:testing/loginpage.dart';
 import 'package:testing/logout/bloc/Logout_bloc.dart';
 import 'package:testing/logout/repository/Logout_repository.dart';
 import 'package:testing/menu/bloc/menu_bloc.dart';
+import 'package:testing/task/bloc/task_event.dart';
 import 'package:testing/task/view/view.dart';
 import 'login/bloc/login_bloc.dart';
 import 'login/repository/repository.dart';
@@ -24,33 +27,77 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-  
-  // Initialize SharedPreferences to check for saved user token
+
   final prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
-  
+
+
   tz.initializeTimeZones();
+
 
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
+    
   );
+void _onNotificationAction(String? payload, BuildContext context) async {
+  if (payload != null) {
+    final Map<String, dynamic> data = jsonDecode(payload);
+    final action = data['action'];
+    final taskId = data['taskId'];
 
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
+    if (action == 'finish') {
+      if (taskId != null) {
+        // Trigger the task completion API
+        BlocProvider.of<TaskBloc>(context).add(MarkTaskAsCompleted(taskId: taskId));
+      }
+    } else if (action == 'edit') {
+      // Navigate to the edit page with the task details
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CreateTaskPage(
+          
+          isEditMode: true,
+          ),
+        ),
+      );
+    }
+  }
+}
+
+
+
+void _initializeNotificationHandler(
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
+  BuildContext context,
+) {
+  flutterLocalNotificationsPlugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    ),
     onDidReceiveNotificationResponse: (NotificationResponse response) {
-      // Handle notification actions if needed
+      _onNotificationAction(response.payload, context);
     },
   );
+}
+
+
+
 
   runApp(MyApp(isUserLoggedIn: token != null));
 }
 
+
+
+
+
+
 class MyApp extends StatelessWidget {
   final bool isUserLoggedIn;
-  
+
   const MyApp({super.key, required this.isUserLoggedIn});
 
   @override
@@ -64,17 +111,15 @@ class MyApp extends StatelessWidget {
       userRepository: userRepository,
       menuRepository: menuRepository,
     );
-    final FlutterLocalNotificationsPlugin localNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
 
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) => TaskBloc(
             taskRepository: taskRepository,
-            localNotificationsPlugin: localNotificationsPlugin,
+            localNotificationsPlugin: flutterLocalNotificationsPlugin,
             userRepository: userRepository,
-            menuRepository: MenuRepository(userRepository: userRepository),
+            menuRepository: menuRepository,
           ),
         ),
         BlocProvider(
@@ -82,13 +127,13 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => MenuBloc(
-            menuRepository: MenuRepository(userRepository: UserRepository()),
-            userRepository: UserRepository(),
+            menuRepository: menuRepository,
+            userRepository: userRepository,
           ),
         ),
         BlocProvider(
           create: (context) => LogoutBloc(
-            logoutRepository: LogoutRepository(userRepository: UserRepository()),
+            logoutRepository: logoutRepository,
           ),
         ),
       ],
@@ -97,10 +142,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        navigatorKey: navigatorKey,
-        home: isUserLoggedIn ? SimplePage() :  Loginpage(),
+        navigatorKey: navigatorKey, // Enable global navigation
+        home: isUserLoggedIn ? SimplePage() : Loginpage(),
         routes: {
-          '/login': (context) =>  Loginpage(),
+          '/login': (context) => Loginpage(),
         },
       ),
     );

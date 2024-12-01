@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testing/menu/repo/menu_repository.dart';
 import '../../login/repository/repository.dart';
 import '../models.dart';
@@ -60,10 +61,13 @@ class TaskRepository {
           final taskId = taskData['_id'];
 
           
-          box.write('taskId', taskId);
-          logger.i('Saved taskId: $taskId');
-          box.write('date', date);
-          logger.i('Saved: $date');
+         SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('taskId', taskId);
+        logger.i('Saved taskId: $taskId');
+
+        // Store other data in SharedPreferences if needed
+        await prefs.setString('date', date);
+        logger.i('Saved: $date');
 
          
           final createdTask = Tasks.fromJson(
@@ -216,9 +220,13 @@ class TaskRepository {
   }
   Future<void> completedTask(String taskId)async{
     try{
-    final token = await userRepository.getToken();
 
-    final taskId = box.read('taskId');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? taskId = prefs.getString('taskId');
+
+    final token = await userRepository.getToken();
+   
+   
     logger.i('token:$token,taskId:$taskId');
     logger.i(
         'Attempting to updating  with ID: $taskId'); 

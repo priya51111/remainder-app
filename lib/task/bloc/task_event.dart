@@ -9,8 +9,13 @@ class TaskSubmitted extends TaskEvent {
   final String task;
   final String date;
   final String time;
+  
 
-  TaskSubmitted({required this.task, required this.date, required this.time});
+  TaskSubmitted(
+      {required this.task,
+      required this.date,
+      required this.time,
+    });
 
   @override
   List<Object> get props => [task, date, time];
@@ -19,49 +24,43 @@ class TaskSubmitted extends TaskEvent {
 class FetchTaskEvent extends TaskEvent {
   final String userId;
   final String date;
-  
+
   final bool? finished;
 
   FetchTaskEvent({
     required this.userId,
     required this.date,
-   
-    this.finished, 
+    this.finished,
   });
 
   @override
-  List<Object> get props => [userId, date]; 
+  List<Object> get props => [userId, date];
 }
-
 
 class DeleteTaskEvent extends TaskEvent {
   final String taskId;
 
   DeleteTaskEvent({required this.taskId});
 }
-class UpdateTaskEvent extends TaskEvent{
-   final String taskId;
+
+class UpdateTaskEvent extends TaskEvent {
+  final String taskId;
   final String task;
   final String date;
   final String time;
   final String menuId;
   final bool isfinished;
-   UpdateTaskEvent({
-    required this.taskId,
-    required this.task,
-    required this.date,
-    required this.time,
-    required this.menuId,
-   required this.isfinished
-  });
+  UpdateTaskEvent(
+      {required this.taskId,
+      required this.task,
+      required this.date,
+      required this.time,
+      required this.menuId,
+      required this.isfinished});
 }
+
 class MarkTaskAsCompleted extends TaskEvent {
-  final String taskId; 
+  final String taskId;
 
   MarkTaskAsCompleted({required this.taskId});
 }
-
-
-
-
-

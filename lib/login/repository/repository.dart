@@ -36,9 +36,7 @@ class UserRepository {
         final userMap = responseBody['data']['user'];
         final user = User.fromJson(userMap);
 
-        box.write('userId', user.userId);
-        logger.i("User ID saved: ${user.userId}");
-
+    
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', user.userId);
         await prefs.setString('email', email);

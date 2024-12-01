@@ -101,7 +101,7 @@ class MenuRepository {
       final userId = userRepository.getUserId();
       logger.i("UserId: $userId");
 
-      if (userId == null) {
+      if (userId == null) { 
         throw Exception('User ID is missing');
       }
 
@@ -113,7 +113,7 @@ class MenuRepository {
         throw Exception('Date is missing');
       }
 
-      // Fetch the token
+    
       final token = await userRepository.getToken();
       if (token == null) {
         throw Exception('Token is missing');

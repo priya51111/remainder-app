@@ -58,5 +58,8 @@ class TaskDeleteFailure extends TaskState {
 class TaskMarkedAsCompleted extends TaskState {
   final String message;
 
-  TaskMarkedAsCompleted({required this.message});
+  const TaskMarkedAsCompleted({required this.message});
+
+  @override
+  List<Object> get props => [message];
 }

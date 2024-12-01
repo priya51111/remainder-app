@@ -101,8 +101,7 @@ class _TasklistpageState extends State<Tasklistpage> {
                   itemCount: state.taskList.length,
                   itemBuilder: (context, index) {
                     final task = state.taskList[index];
-                    final menuname = state.menuMap[task.menuId] ??
-                        'Unknown menu'; 
+                  
                     return Padding(
                       padding: const EdgeInsets.all(9),
                       child: Container(
@@ -137,14 +136,7 @@ class _TasklistpageState extends State<Tasklistpage> {
                                   ),
                                 ), 
 
-                                SizedBox(width: 10),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 19),
-                                  child: Text(
-                                    menuname,
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ), // Di
+                               // Di
                               ],
                             ),
                             Padding(
@@ -168,7 +160,7 @@ class _TasklistpageState extends State<Tasklistpage> {
                                   IconButton(
                                       onPressed: () {
                                         context.read<TaskBloc>().add(
-                                            DeleteTaskEvent(taskId: task.id));
+                                            DeleteTaskEvent(taskId: task.taskId));
                                       },
                                       icon: Icon(
                                         Icons.delete,

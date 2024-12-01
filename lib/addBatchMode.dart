@@ -140,7 +140,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                         onChanged: (bool? value) {
                           if (value != null && !widget.task!.isFinished) {
                             context.read<TaskBloc>().add(
-                                  MarkTaskAsCompleted(taskId: widget.task!.id),
+                                  MarkTaskAsCompleted(taskId: widget.task!.taskId),
                                 );
                           }
                         },
@@ -362,7 +362,7 @@ class _CreateTaskPageState extends State<Addbatchmode> {
                           if (_isEditMode && widget.task != null) {
                             context.read<TaskBloc>().add(
                                   UpdateTaskEvent(
-                                      taskId: widget.task!.id,
+                                      taskId: widget.task!.taskId,
                                       task: task,
                                       date: date,
                                       time: time,
