@@ -33,7 +33,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
      
       emit(UserCreated(createdUser));
 
-      logger.i('User created successfully: ${createdUser.userId}');
+      logger.i('UserBloc::: _onCreateUser:: User created : ${createdUser.userId}');
 
       final authResponse =
           await userRepository.logIn(event.email, event.password);

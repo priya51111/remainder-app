@@ -10,14 +10,7 @@ abstract class TaskState extends Equatable {
 
 class TaskInitial extends TaskState {}
 
-class TaskLoaded extends TaskState {
-  final List<Tasks> filteredTasks;
 
-  const TaskLoaded(this.filteredTasks);
-
-  @override
-  List<Object> get props => [filteredTasks];
-}
 
 class TaskLoading extends TaskState {}
 

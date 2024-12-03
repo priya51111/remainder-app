@@ -98,7 +98,7 @@ class MenuRepository {
       {required String userId, required String providedDate}) async {
     try {
       
-      final userId = userRepository.getUserId();
+      final userId =  await  userRepository.getUserId();
       logger.i("UserId: $userId");
 
       if (userId == null) { 

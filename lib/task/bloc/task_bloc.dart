@@ -184,7 +184,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       print('Task update status: $isUpdated, isFinished: ${event.isfinished}');
       if (isUpdated) {
         final updatedTasks = await taskRepository.fetchTasks(
-          userId: userRepository.getUserId()!,
+          userId:  userRepository.getUserId()!,
           date: box.read('date') ?? '',
         );
         add(FetchTaskEvent(

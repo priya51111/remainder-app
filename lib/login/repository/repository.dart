@@ -80,10 +80,9 @@ class UserRepository {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final token = data['token'];
-
-      if (token.isEmpty) {
-        throw Exception('Invalid credentials: token or userId is missing');
-      }
+ if (token == null || token.isEmpty) {
+      throw Exception('Invalid credentials: token is missing');
+    }
 
     
       final prefs = await SharedPreferences.getInstance();
@@ -98,7 +97,9 @@ class UserRepository {
 
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
+    final token = prefs.getString('token');
+  logger.i("Retrieved token: $token");
+  return token;
   }
 
  
@@ -106,11 +107,8 @@ class UserRepository {
  
 
 
-  String generateUserId() {
-    return DateTime.now().millisecondsSinceEpoch.toString();
-  }
+ 
 
-  static deleteUser() {}
 
 
 }

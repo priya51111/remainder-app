@@ -21,7 +21,7 @@ class _LogoutPageState extends State<LogoutPage> {
     super.initState();
     
     userRepository = UserRepository();
-    userId = userRepository.getUserId();
+   
   }
 
   @override

@@ -12,7 +12,7 @@ class LogoutRepository {
   LogoutRepository({required this.userRepository});
 
   Future<void> deleteUser(String userId) async {
-    userId = userRepository.getUserId();
+    userId =   userRepository.getUserId();
     logger.i("UserId: $userId");
     final url = Uri.parse('$apiUrl/api/deleteUser/$userId');
     final token = await userRepository.getToken();
